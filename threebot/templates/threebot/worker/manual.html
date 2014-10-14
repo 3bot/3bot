@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Worker: {{ worker.title }}
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Worker - {{ worker.title }} {% if worker.is_accessible %}<span class="glyphicon glyphicon-ok-sign"></span>{% else %}<span class="glyphicon glyphicon-minus-sign"></span>{% endif %}</h2>
+
+<p>Your Worker settings are now saved into the database. To finish the setup switch to your Worker Mashine and type the following command into a Terminal.</p>
+
+<pre>https://gist.githubusercontent.com/walterrenner/4d8863043404bec01d0f/raw/efcbd7aaa65b4360f3182018797a3249d85a9b64/install.sh</pre>
+
+<p>After finishing the installation on the worker mashine refresh this page and the icon obove should change.</p>
+
+<p><a href="#">email this instruction to ...</a></p>
+
+{% endblock %}

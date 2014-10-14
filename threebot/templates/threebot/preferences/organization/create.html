@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+new Team
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Create new Team</h2>
+  {% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+  <p class="bg-danger">{{ error }}</p>
+  {% endfor %}
+  {% endif %}
+  <form action="." method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for field in form %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+    <div class="col-sm-10">
+      {% if field.errors %}
+      {% for error in field.errors %}
+      <p class="text-danger">{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+        {{ field }}
+      <p class="help-block">{{ field.help_text }}</p>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" class="btn btn-primary" name="_save" value="Save" />
+    </div>
+  </div>
+</form>
+
+{% endblock %}

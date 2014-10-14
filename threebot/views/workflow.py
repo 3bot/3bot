@@ -1,0 +1,339 @@
+import json
+
+from django import forms
+from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
+
+from ..models import Task
+from ..models import Worker
+from ..models import Workflow
+from ..models import WorkflowTask
+from ..models import WorkflowPreset
+from ..models import UserParameter, Parameter
+from ..models import OrganizationParameter, ParameterList
+from ..models import WorkflowLog
+from ..utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
+from ..forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
+from ..runflow import run_workflow
+
+
+@login_required
+def list(request, template='threebot/workflow/list.html'):
+    orgs = get_my_orgs(request)
+    workflows = Workflow.objects.filter(owner__in=orgs)
+
+    return render_to_response(template, {'request': request,
+                                         'workflows': workflows,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def create(request, template='threebot/workflow/create.html'):
+    form = WorkflowCreateForm(request.POST or None, request=request)
+
+    if form.is_valid():
+        workflow = form.save()
+
+        if '_continue' in form.data:
+            # rerirect to detailview
+            return redirect('core_wokflow_detail', slug=workflow.slug)
+        elif '_addanother' in form.data:
+            # redirect to create page
+            return redirect('core_workflow_create')
+        else:  # _save
+            # redirect to reorder view
+            return redirect('core_wokflow_reorder', slug=workflow.slug)
+
+    return render_to_response(template, {'request': request,
+                                         'form': form,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def edit(request, slug, template='threebot/workflow/edit.html'):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+
+    form = WorkflowChangeForm(request.POST or None, instance=workflow, )
+
+    if form.is_valid():
+        workflow = form.save()
+
+        if '_continue' in form.data:
+            # rerirect back to detailview
+            return redirect('core_wokflow_reorder', slug=workflow.slug)
+        elif '_addanother' in form.data:
+            # redirect to create page
+            return redirect('core_workflow_create')
+        else:  # _save
+            # redirect to listview
+            return redirect('core_workflow_list')
+
+    return render_to_response(template, {'request': request,
+                                         'form': form,
+                                         'workflow': workflow,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail(request, slug, template='threebot/workflow/detail.html'):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+
+    wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
+    preset = {}
+    ready_to_perform = False  # if true: each form is valid an request method is POST
+
+    logs = filter_workflow_log_history(workflow=workflow, quantity=5)
+
+    workflow_tasks = order_workflow_tasks(workflow)
+
+    # serve relevant forms
+    initials_for_worker_form = {}
+    if request.GET.get('worker'):
+        initials_for_worker_form['worker'] = request.GET.get('worker')
+    worker_form = WorkerSelectForm(request.POST or None, request=request, workflow=workflow, initial=initials_for_worker_form)
+    for wf_task in workflow_tasks:
+        extra = wf_task.task.required_inputs
+        wf_task.form = TaskParameterForm(request.POST or None, request=request, extra=extra, workflow_task=wf_task)
+
+    if request.method == 'POST':
+        ready_to_perform = True
+
+        if worker_form.is_valid():
+            worker_id = worker_form.cleaned_data['worker']
+            preset.update({'worker_id': worker_id})
+        else:
+            ready_to_perform = False
+
+        for wf_task in workflow_tasks:
+            if wf_task.form.is_valid():
+                pass
+            else:
+                ready_to_perform = False
+
+    if ready_to_perform:
+        inp = {}
+
+        for wf_task in workflow_tasks:
+            data = wf_task.form.cleaned_data
+            preset.update({wf_task.id: {}})
+
+            form_dict = {}
+            for data_type in Parameter.DATA_TYPE_CHOICES:
+                form_dict[data_type[0]] = {}
+
+            for template_input, path_to_value in data.iteritems():  # TODO: better identifier
+                # template_input = "wt_task_1.email.recipient_email"
+                # path_to_value = "prompt.email.name@provider.com"
+                # path_to_value = "output.string.output_<WorkflowTask.id>"
+
+                template_input_list = template_input.split('.')
+                wf_task_id = template_input_list[0]
+                template_input_data_type = template_input_list[1]
+                template_input_name = template_input_list[2]
+
+                path_to_value_list = path_to_value.split('.')
+                param_owner = path_to_value_list[0]
+                if len(path_to_value_list) == 3:
+                    param_data_type = path_to_value_list[1]
+                    param_name = path_to_value_list[2]
+
+                # k[0] = wt_task id:
+                # k[1] = data_type:
+                # k[2] = value:
+
+                # val[0] = param owner
+                # val[1] = param data_type
+                # val[2] = param name
+
+                if param_owner == 'global':
+                    value = OrganizationParameter.objects.get(data_type=param_data_type, name=param_name)
+                    form_dict[template_input_data_type][template_input_name] = value.value
+                if param_owner == 'user':
+                    value = UserParameter.objects.get(data_type=param_data_type, name=param_name, owner=request.user)
+                    form_dict[template_input_data_type][template_input_name] = value.value
+                if param_owner == 'output':
+                    # we set this to "output_<id>". while performing we replace this with the output returned from the WorkflowTask with id = <id>
+                    form_dict[template_input_data_type][template_input_name] = '%s' % str(param_name)
+                if param_owner == 'prompted':
+                    prompted_value = data['prompt_%s' % template_input].split('.', 2)
+                    form_dict[template_input_data_type][template_input_name] = prompted_value[2]
+
+                # update presets
+                if not wf_task.form[template_input].is_hidden:
+                    templatefield = '%s.%s' % (template_input_data_type, template_input_name)
+
+                    preset[wf_task.id][templatefield] = path_to_value
+
+            inp['%s' % wf_task.id] = form_dict
+
+            wf_preset.defaults = preset
+            wf_preset.save()
+
+        worker = Worker.objects.get(id=worker_id)
+        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, performed_by=request.user, performed_on=worker)
+        workflow_log.save()
+
+        ans = run_workflow(workflow_log, worker)
+
+        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+
+    # else:
+    #     raise("error")
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'workflow_tasks': workflow_tasks,
+                                         'worker_form': worker_form,
+                                         'logs': logs,
+                                         'parameter_form': UserParameterCreateForm(user=request.user),
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail_with_list(request, slug, template='threebot/workflow/detail_with_list.html'):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+
+    initials_for_worker_form = {}
+    if request.GET.get('worker'):
+        initials_for_worker_form['worker'] = request.GET.get('worker')
+    worker_form = WorkerSelectForm(request.POST or None, request=request, workflow=workflow, initial=initials_for_worker_form)
+
+    initials_for_list_form = {}
+    if request.GET.get('list'):
+        initials_for_list_form['parameter_list'] = request.GET.get('list')
+    list_form = ParameterListSelectForm(request.POST or None, request=request, workflow=workflow, initial=initials_for_list_form)
+    workflow_tasks = order_workflow_tasks(workflow)
+
+    if worker_form.is_valid() and list_form.is_valid():
+        worker_id = worker_form.cleaned_data['worker']
+        worker = Worker.objects.get(id=worker_id)
+
+        list_id = list_form.cleaned_data['parameter_list']
+        parameter_list = ParameterList.objects.get(id=list_id)
+        input_dict = {}
+
+        for wf_task in workflow_tasks:
+            l_input_dict = {}
+            for data_type in Parameter.DATA_TYPE_CHOICES:
+                l_input_dict[data_type[0]] = {}
+
+            for parameter in parameter_list.parameters.all():
+                l_input_dict[parameter.data_type][parameter.name] = parameter.value
+
+            input_dict['%s' % wf_task.id] = l_input_dict
+
+        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, performed_by=request.user, performed_on=worker)
+        workflow_log.save()
+
+        wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
+        wf_preset.defaults.update({'worker_id': worker_id})
+        wf_preset.defaults.update({'list_id': list_id})
+        wf_preset.save()
+
+        ans = run_workflow(workflow_log, worker)
+
+        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+
+    logs = filter_workflow_log_history(workflow=workflow, quantity=5)
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'workflow_tasks': workflow_tasks,
+                                         'worker_form': worker_form,
+                                         'list_form': list_form,
+                                         'logs': logs,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def delete(request, slug, template='threebot/workflow/delete.html'):
+    """
+    """
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+
+    if request.method == 'POST':
+        new_data = request.POST.copy()
+        if new_data['delete_workflow'] == 'Yes':
+            workflow.delete()
+            return redirect('core_workflow_list')
+        else:
+            return redirect('core_workflow_edit', slug=workflow.slug)
+
+    return render_to_response(template, {'workflow': workflow,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def reorder(request, slug, template='threebot/workflow/reorder.html'):
+    workflow = Workflow.objects.get(slug=slug)
+    tasks = Task.objects.filter(owner=workflow.owner)
+    workflow_tasks = order_workflow_tasks(workflow)
+
+    form = WorkflowReorderForm(request.POST or None)
+
+    if form.is_valid():
+        decoded = json.loads(form.cleaned_data['order'])
+
+        # delete all wf_tasks for workflow and create new from form data
+        for workflow_task in workflow_tasks:
+            workflow_task.delete()
+
+        prev = None
+        for idx, order_item in enumerate(decoded[0]):
+            curr_task = Task.objects.get(id=order_item['id'])
+            curr = WorkflowTask(task=curr_task, workflow=workflow)
+            curr.save()
+
+            if prev:
+                curr.prev_workflow_task = prev
+                curr.save()
+                prev.next_workflow_task = curr
+                prev.save()
+            prev = curr
+
+        # redirect back to detail view
+        return redirect('core_workflow_detail', workflow.slug)
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'workflow_tasks': workflow_tasks,
+                                         'tasks': tasks,
+                                         'form': form,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def log_detail(request, slug, id, template='threebot/workflow/log.html'):
+    orgs = get_my_orgs(request)
+
+    workflow_log = get_object_or_404(WorkflowLog, id=id)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+    try:
+        templates = render_templates(workflow_log, mask=True)
+    except Exception, e:
+        templates = None
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'workflow_log': workflow_log,
+                                         'outputs': sorted(workflow_log.outputs.iteritems()),
+                                         'templates': templates,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def replay(request, slug, id):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+
+    old_log = get_object_or_404(WorkflowLog, id=id)
+    new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, performed_by=request.user, performed_on=old_log.performed_on)
+    new_log.save()
+
+    ans = run_workflow(new_log, old_log.performed_on)
+    return redirect('core_wokflow_log_detail', slug=slug, id=new_log.id)

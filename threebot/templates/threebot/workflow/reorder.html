@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% block doctitle %}
+reorder Workflow: {{ workflow }}
+{% endblock %}
+
+{% block content %}
+
+{% addtoblock "css" %}
+{% load static %}
+    <link rel="stylesheet" href="{% static "threebot/css/sortable.css" %}">
+{% endaddtoblock "css" %}
+
+<h2>reorder Workflow: <a href="{% url 'core_workflow_detail' workflow.slug %}">{{ workflow }}</a></h2>
+<p>
+  <small>{{ workflow.desc|urlize }}</small>
+</p>
+
+<div class="row">
+  <div class="col-sm-8">
+    <h3>Tasks</h3>
+    <div class="alert alert-success" role="alert"><strong>Drop Tasks here.</strong> To remove Tasks hit the x Button</div>
+    <ol style="margin-bottom:40px;" class="list-unstyled task-target" id="task_target">
+    {% if workflow_tasks %}
+    
+    {% for wt in workflow_tasks %}
+    <li data-name="{{ wt.task.title }}" data-id="{{ wt.task.id }}">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            {{ wt.task.title }}
+            <span class="pull-right"><button type="button" class="close delete" aria-hidden="true">&times;</button></span>
+          </h3>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+
+    {% else %}
+    {% endif %}
+    </ol>
+    <form method="post" action="." id="workflow_reorder_form" class="" accept-charset="UTF-8">
+      {% csrf_token %}
+      {% for field in form.hidden_fields %}
+      {{ field }}
+      {% endfor %}
+      <input type="submit" class="btn btn-primary" value="Save order">
+    </form>
+  </div>
+  
+  <div class="col-sm-4">
+  <h3>
+    Tasks of {{ workflow.owner }}
+    <span class="pull-right">
+      <a href="{% url 'core_task_create' %}" type="button" class="btn btn-primary btn-sm">Add Task</a>
+    </span>
+  </h3>
+  <div class="input-group" style="margin-bottom: 20px;"><span class="input-group-addon">Filter</span>
+
+      <input id="filter" type="text" class="form-control" placeholder="Type here...">
+  </div>
+
+  <ol class="list-unstyled task-pool searchable">
+  {% for task in tasks %}
+    <li data-name="{{ task.title }}" data-id="{{ task.id }}">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          {{ task.title }}
+        </h3>
+      </div>
+    </div>
+    </li>
+  {% empty %}
+  <div class="alert alert-warning" role="alert"><strong>No Tasks for the team {{ workflow.owner }} found!</strong><br>Go ahead and <a href="{% url 'core_task_create' %}">create some</a></div>
+  {% endfor %}
+  </ol>
+  </div>
+
+  {# <div class="col-sm-12"><pre id="order_json"></pre></div> #}
+</div>
+
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+var workflowID = {{ workflow.id }};
+var delete_button = '<span class="pull-right"><button type="button" class="close delete" aria-hidden="true">&times;</button></span>'
+
+$("#task_target").on('click', '.delete', function () {
+  $(this).parent().parent().parent().parent().parent().remove();
+});
+
+
+$(function  () {
+  var group = $("ol.task-target").sortable({
+    group: 'task-sort',
+    drop: true,
+    delay: 200,
+    
+    onDragStart: function (item, container, _super) {
+      // Duplicate items of the no drop area
+      if(!container.options.drop)
+        item.clone().insertAfter(item)
+        item.children('.panel').children('.panel-heading').children('.panel-title').append(delete_button)
+      _super(item)
+    },
+
+    // onDrop: function  (item, container, _super) {
+    //   var data = group.sortable("serialize").get();
+    //   var jsonString = JSON.stringify(data, null, ' ');
+
+    //   $('#id_order').val(jsonString);
+    //   $('#order_json').text(jsonString);
+    //   _super(item)
+    // }
+  })
+
+  var pool = $("ol.task-pool").sortable({
+    group: 'task-sort',
+    drop: false,
+  })
+})
+
+$('#workflow_reorder_form').submit(function(event) {
+  $('#id_workflow_id').val(workflowID);
+  var data = $("ol.task-target").sortable("serialize").get();
+  var jsonString = JSON.stringify(data, null, ' ');
+
+  $('#id_order').val(jsonString);
+  $('#order_json').text(jsonString);
+  //event.preventDefault();
+
+});
+
+$(document).ready(function () {
+    (function ($) {
+        $('#filter').keyup(function () {
+            var rex = new RegExp($(this).val(), 'i');
+            $('.searchable li').hide();
+            $('.searchable li').filter(function () {
+                return rex.test($(this).text());
+            }).show();
+        })
+    }(jQuery));
+});
+</script>
+
+{% endaddtoblock "js" %}
+
+{% endblock %}

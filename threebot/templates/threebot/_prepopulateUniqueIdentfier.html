@@ -1,0 +1,11 @@
+<script type="text/javascript">
+function prepopulateUniqueIdentfier()
+{
+  var title = document.getElementById("id_title").value;
+  var unique_identifier = title.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'.');
+  var id_field = document.getElementById("id_unique_identifier")
+  if (id_field.value.length == 0){
+    id_field.value = unique_identifier;
+  };
+}
+</script>

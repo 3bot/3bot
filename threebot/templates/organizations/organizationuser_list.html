@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load org_tags %}
+
+{% block content %}
+<h2>
+    {{ organization }}'s Members
+    <span class="pull-right">
+        <a href="{% url "organization_user_add" organization.pk %}" type="button" class="btn btn-primary btn-sm">Add a member</a>
+    </span>
+</h2>
+<p>
+    <small>Manage members here</small>
+</p>
+
+{% organization_users organization %}
+{% endblock %}

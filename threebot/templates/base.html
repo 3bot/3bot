@@ -1,0 +1,86 @@
+{% extends "bootstrap_base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block body %}
+<div id="wrap">
+
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color: #333;">
+    <div class="container">
+      
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/" style="padding: 10px 15px;"><img width="32" src="{% static "threebot/img/logo_128.png" %}"></a>
+        <!-- <a id="" class="navbar-brand" href="{% url 'core_workflow_list' %}">Workflows</a> -->
+
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li id="nav_workflows"><a href="{% url 'core_workflow_list' %}">Workflows</a></li>
+          <li id="nav_tasks"><a href="{% url 'core_task_list' %}">Tasks</a></li>
+          <li id="nav_workers"><a href="{% url 'core_worker_list' %}">Workers</a></li>
+        </ul>
+        {% comment %}
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search">
+          </div>
+          <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search">&nbsp;Search</span></button>
+        </form>          
+        {% endcomment %}
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account&nbsp;<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{% url 'core_user_profile' %}">
+                  <span class="glyphicon glyphicon-user"></span>&nbsp;{{ request.user }}
+                </a>
+              </li>
+              <li class="divider"></li>
+              {% show_my_orgs request %}
+              <li>
+                <a href="{% url 'organization_add' %}">
+                  <span class="glyphicon glyphicon-plus"></span>&nbsp; create new Team 
+                </a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'auth_logout' %}">
+                  <span class="glyphicon glyphicon-log-out"></span>&nbsp;Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+      <div class="container">
+        {% comment %}
+        <div class="alert alert-danger" role="alert">
+          <strong>Warning!</strong> 3bot is still under heavy development. Use 3bot at your own risk!
+        </div>
+        {% endcomment %}
+        {% block content %} {% endblock %}
+      </div> <!-- /.container -->    
+
+</div><!--/#wrap -->
+
+<div id="footer">
+  <div class="container">
+    <p class="text-muted credit pull-right"><a href="/kb/">Knowledge Base</a> · Version: {% get_threebot_version as version %}<a href="https://github.com/3bot/3bot/releases/">{{ version }}</a></p>
+    <p class="text-muted credit"><a href="http://3bot.io">3bot</a> is an <a href="https://github.com/3bot">Open-source product</a> backed by <a href="https://www.arteria.ch"><img style="margin-bottom: 2px;" src="data:image/png;base64,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"></a>.</p>
+  </div>
+</div><!--/#footer -->
+{% endblock %}

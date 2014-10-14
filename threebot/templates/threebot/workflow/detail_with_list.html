@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block doctitle %}
+Workflow: {{ workflow }}
+{% endblock %}
+
+
+{% block content %}
+<h2>
+  Workflow - {{ workflow }}
+  <span class="pull-right">
+    <a href="{% url 'core_wokflow_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-sm hidden-xs hidden-sm">Change Task order</a>
+    <a href="{% url 'core_workflow_edit' workflow.slug %}" type="button" class="btn btn-primary btn-sm">Edit Workflow</a>
+  </span>
+</h2>
+<div class="row">
+  <div class="col-sm-12">
+    <ul class="list-inline">
+      <li></li><strong>Team:</strong> {{ workflow.owner }}</li>
+      {% get_last_worker_for request workflow as worker %}
+      {% if worker %}
+      <li></li><strong>Last performed on:</strong> <a href="{{ worker.get_absolute_url }}">{{ worker }}</a></li></li>
+      {% endif %}
+    </ul>
+    <p>
+      <small>{{ workflow.desc|urlize|linebreaks }}</small>
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <a href="{% url "core_workflow_detail" workflow.slug %}" type="button" class="btn btn-primary btn-xs">Back to usual</a>
+  </div>
+</div>
+
+<div class="row">
+  {% if workflow_tasks %}
+  <div class="col-sm-6">
+  <form method="post" action="." id="workflow_form" class="form-horizontal" role="form">
+    {% csrf_token %}
+  <h3>Worker</h3>
+    {% if worker_form.non_field_errors %}
+    {% for error in worker_form.non_field_errors %}
+    <p class="bg-danger">{{ error }}</p>
+    {% endfor %}
+    {% endif %}
+
+    {% for field in worker_form %}
+      {% if field.errors %}
+      {% for error in field.errors %}
+      <p class="text-danger">{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+    {{ field }}      
+    {% endfor %}
+
+  <h3>Parameter List</h3>
+    {% if list_form.non_field_errors %}
+    {% for error in list_form.non_field_errors %}
+    <p class="bg-danger">{{ error }}</p>
+    {% endfor %}
+    {% endif %}
+
+    {% for field in list_form %}
+      {% if field.errors %}
+      {% for error in field.errors %}
+      <p class="text-danger">{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+    {{ field }}      
+    {% endfor %}
+
+    <input type="submit" id="perform_workflow" class="btn btn-success btn-lg btn-block" value="Perform" style="margin-top: 20px;">
+  </form>
+  <h3>Tasks</h3>
+  {% for wt in workflow_tasks %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          {{ wt.task.title }}
+          <small>
+            {% if wt.task.is_readonly or wt.task.is_builtin %}
+            {% else %}
+            <a href="{{ wt.task.get_absolute_url }}">view Details</a>
+            {% endif %}
+          </small>
+        </h3>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <div class="col-sm-6">
+    <h3>Log History</h3>
+    {% if logs %}
+    {% for log in logs %}
+    <p>
+      {% if log.exit_code == log.ERROR %}
+      <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
+      {% else %}
+      <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
+      {% endif %}
+      <a href="{{ log.get_absolute_url }}">{{ log }}</a>
+    </p>
+    {% endfor %}
+    <p>
+      <small><a href="#">View all</a></small>
+    </p>
+    {% else %}{# no logs #}
+    <div class="alert alert-warning" role="alert">Workflow not logged jet.</div>
+    {% endif %}
+
+  </div>
+  {% else %}
+  <div class="col-sm-6">
+    <div class="alert alert-warning" role="alert"><strong>No Tasks</strong> in this Workflow.</div>
+    <a href="{% url 'core_wokflow_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-lg">Add Tasks</a>
+  </div>
+{% endif %}
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="newParameterModal" tabindex="-1" role="dialog" aria-labelledby="Create new Parameter" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{% url 'core_user_parameter' %}" method="post" class="form-horizontal" role="form">
+    {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel">Create new Parameter</h4>
+        </div>
+        <div class="modal-body">
+          {% for field in parameter_form.visible_fields %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+            <div class="col-sm-10">
+              {% if field.errors %}
+              {% for error in field.errors %}
+              <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+              {% endif %}
+              {{ field }}
+              <p class="help-block">{{ field.help_text }}</p>
+            </div>
+          </div>
+          {% endfor %}
+          {% for hidden in parameter_form.hidden_fields %}
+            {{ hidden }}
+            <input type="hidden" name="next" value="{{ request.path }}">
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" name="_save" value="Save" />
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+// loop each select, if nothing selected prompt user and add value to select field
+$('#workflow_form').submit(function(event) {
+  //event.preventDefault();
+  $('select', this).each(function( index ) {
+      if ($(this).val() === 'prompted.string.askme'){
+        var arr = $(this).attr('id').split('.');
+        var hiddenName = 'prompt_' + $(this).attr('name')
+        var fieldname = arr[2];
+        var type = arr[1];
+        var value = prompt('Please enter a value for "' + fieldname + '"', fieldname);
+        if (value === null || value == null || value === "") {
+          alert("All fields are required. Enter a value or select a Parameter form the database and click Perform again.");
+          event.preventDefault();
+        };
+        $('input[name="' + hiddenName + '"]').val('prompt.' + type + '.' + value);
+      }
+  });
+});
+
+$(function() {
+    $('.show-tooltip').tooltip({placement: 'bottom'});
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

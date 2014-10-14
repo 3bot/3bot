@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% block doctitle %}
+Logged {{ workflow }}
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="row">
+  <div class="col-sm-10">
+    <h2>
+      {% if workflow_log.exit_code == workflow_log.ERROR %}
+      <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>  
+      {% else %}
+      <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
+      {% endif %}
+      Logged <a href="{{ workflow.get_absolute_url }}">{{ workflow }}</a>
+    </h2>
+  </div>
+  
+  <div class="col-sm-2">
+    <div class="show-tooltip hidden-xs" style="margin: 0 auto 10px;" title="{% if not templates %}Looks like the Task order has changed. The templates can not be displayed.{% else %}Click to view the renderes Task templates, that were sent to the worker.{% endif %}">
+      <a href="#" data-toggle="modal" type="button" class="btn btn-primary btn-sm btn-block {% if not templates %}disabled{% endif %}" data-target="#TemplatesModal">show rendered Scripts</a>
+    </div>
+    <div class="show-tooltip" style="margin: 0 auto 10px;" title="{% if workflow_log.exit_code == workflow_log.ERROR or not templates %}Looks like this Workflow has failed or the Task order has changed. You can not replay this Log.{% else %}Run again with »this« settings.{% endif %}">
+      <a href="{% url 'core_wokflow_replay' workflow.slug workflow_log.id %}" type="button" class="btn btn-success btn-lg btn-block {% if workflow_log.exit_code == workflow_log.ERROR or not templates %}disabled{% endif %}"><span class="glyphicon glyphicon-repeat"></span> Replay</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <ul class="list-inline">
+      <li></li><strong>Logged by:</strong> {{ workflow_log.performed_by }}</li>
+      <li><strong>Log Time:</strong> {{ workflow_log.date_created }}</li>
+      <li><strong>Log worker:</strong> <a href="{{ workflow_log.performed_on.get_absolute_url }}">{{ workflow_log.performed_on }}</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <h3>Output</h3>
+    <pre style="background-color:#333; color:#32CD32; padding:12px; font-family: monospace;">{% for k,v in outputs %}<b>{{ k }}:</b><br>{{ v.output }}<br><br>{% endfor %}</pre>
+  </div>
+</div>
+
+{% if templates %}
+<!-- Modal -->
+<div class="modal fade" id="TemplatesModal" tabindex="-1" role="dialog" aria-labelledby="Templates" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel">Templates</h4>
+          <p>Click on a Textarea to expand it.</p>
+        </div>
+        <div class="modal-body">
+        {% for tpl in templates %}
+          <div class="form-group">
+          <textarea readonly class="form-control">{{ tpl|escape }}</textarea>
+          </div>
+        {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" name="_save" value="Save" />
+        </div>
+      </div>
+  </div>
+</div>
+{% endif %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(function() {
+    $('.show-tooltip').tooltip({placement: 'bottom'});
+});
+</script>
+{% endaddtoblock "js" %}
+
+{% endblock %}

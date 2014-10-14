@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Choose Organization
+{% endblock %}
+
+{% block content %}
+<div class="span12">
+	Please choose an organization to work with
+    {% for org in orgs %}
+	<a href="/{{ LANGUAGE_CODE }}/crm/companies/{{ org.slug }}/">{{ org }}</a>,  
+    {% endfor %}
+ </div>
+{% endblock %}

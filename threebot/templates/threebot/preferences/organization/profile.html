@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Organization settings
+{% endblock %}
+
+
+{% block content %}
+<h2>Team: {{ currOrg }}</h2>
+
+{% include "threebot/preferences/organization/_tab_navigation.html" %}
+
+{{ currOrg }}
+{% endblock %}

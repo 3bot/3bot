@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs" role="tablist" style="margin: 0 0 15px;">
+  <li {% if profile %}class="active" {% endif %}><a href="{% url 'core_user_profile' %}">Profile</a></li>
+  <li {% if parameter %}class="active" {% endif %}><a href="{% url 'core_user_parameter' %}">Parameter</a></li>
+  <li><a href="#">Recent Activity</a></li>
+</ul>

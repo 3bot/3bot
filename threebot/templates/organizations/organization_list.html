@@ -1,0 +1,24 @@
+{% extends "organizations_base.html" %}
+{% block content %}
+<h2>
+    Your Teams
+    <span class="pull-right">
+        <a href="{% url 'organization_add' %}" type="button" class="btn btn-primary btn-sm">Add Team</a>
+    </span>
+</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody  class="searchable">
+    {% for organization in organizations %}
+    <tr>
+        <td><a href="{{ organization.get_absolute_url }}">{{ organization }}</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

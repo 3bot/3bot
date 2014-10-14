@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% block doctitle %}
+all Worker
+{% endblock %}
+
+
+{% block content %}
+<h2>
+	Workers
+	<span class="pull-right">
+		<a href="{% url 'core_worker_create' %}" type="button" class="btn btn-primary btn-sm">Add Worker</a>
+	</span>
+</h2>
+<p>
+	<small>Workers are mashines the workflows are performed on. Select the Worker you want to edit.</small>
+</p>
+
+{% if workers %}
+<table class="table table-hover">
+	<thead>
+      	<tr>
+            <th></th>
+            <th class="hidden-xs">IP</th>
+            <th class="hidden-xs">Port</th>
+            <th>accessible</th>
+            <th>Team</th>
+      	</tr>
+    </thead>
+	{% for worker in workers %}
+	<tr>
+		<td><a href="{{ worker.get_absolute_url }}">{{ worker.title }}</a></td>
+		<td class="hidden-xs"><small>{{ worker.ip }}</small></td>
+		<td class="hidden-xs"><small>{{ worker.port }}</small></td>
+		<td>
+			{% if worker.is_accessible %}
+			<span class="glyphicon glyphicon-ok-sign"></span>
+			{% else %}
+			<span class="glyphicon glyphicon-minus-sign"></span>
+			{% endif %}
+		</td>
+        <td>{{ worker.owner }}</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% else %}
+<div class="alert alert-warning" role="alert"><strong>No Workers!</strong> Go ahead and create some</div>
+<a href="{% url 'core_worker_create' %}" type="button" class="btn btn-primary btn-lg">Add Worker</a>
+{% endif %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$('#nav_workers').addClass('active');   
+</script>
+{% endaddtoblock %}
+
+{% endblock %}
