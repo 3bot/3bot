@@ -1,0 +1,7 @@
+{% for org in orgs %}
+<li>
+<a href="{% url 'organization_detail' organization_pk=org.id %}">
+  <span class="glyphicon glyphicon-asterisk"></span>&nbsp{{ org.name }}
+</a>
+</li>
+{% endfor %}

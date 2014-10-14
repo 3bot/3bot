@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Team settings
+{% endblock %}
+
+{% block content %}
+<h2>{{ organization_user }} @ {{ organization }}</h2>
+<form action="." method="post">{% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

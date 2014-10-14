@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Team settings
+{% endblock %}
+
+{% block content %}
+{% if organization_user %}
+<h2> {{ organization_user }} @ {{ organization }}</h2>
+{% else %}
+<h2>Invite new User</h2>
+{% endif %}
+{% if user == organization_user.user %}This is you!{% endif %}
+  <form action="." method="post" class="form-horizontal" role="form">
+  {% csrf_token %}
+  {% for field in form %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+    <div class="col-sm-10">
+      {% if field.errors %}
+      {% for error in field.errors %}
+      <p class="text-danger">{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+        {{ field }}
+      <p class="help-block">{{ field.help_text }}</p>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" class="btn btn-primary" name="_save" value="Save" />
+    </div>
+  </div>
+</form>
+
+{% endblock %}

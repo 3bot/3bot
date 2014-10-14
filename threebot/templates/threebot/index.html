@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+Configure, Build and Perform
+{% endblock %}
+
+{% block content %}
+<h2>3bot</h2>
+<blockquote>
+  <p>Configure, Build and Perform</p>
+</blockquote>
+<div class="row">
+    {% if team_logs %}
+    <div class="col-sm-6">
+        <h3>Team Log History</h3>
+    	{% for log in team_logs %}
+        <p>
+            {% if log.exit_code == log.ERROR %}
+            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
+            {% else %}
+            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
+            {% endif %}
+    		<a href="{{ log.get_absolute_url }}">{{ log }}</a>
+    	</p>
+    	{% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if counts %}
+    <div class="col-sm-6">
+        <h3>Most performed Workflows</h3>
+        {% for wf in counts %}
+        <p>
+            <span class="label label-info">{{ wf.issue_count }}x</span> <a href="{{ wf.get_absolute_url }}">{{ wf.title }}</a>
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<div class="row">
+    {% if my_logs %}
+    <div class="col-sm-6">
+        <h3>My Log History</h3>
+        {% for log in my_logs %}
+        <p>
+            {% if log.exit_code == log.ERROR %}
+            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
+            {% else %}
+            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
+            {% endif %}
+            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% if not my_log and not team_logs and not counts %}
+<div class="row">
+    <h3>Look like you just installed 3bot. Here is a small Todo list to get started</h3>
+    <ol>
+        <li><a href="{% url 'core_worker_create' %}">Configure a Worker</a>.</li>
+        <li><a href="{% url 'core_task_create' %}">Create some Tasks</a>. You can find some Useful Tasks on TODO: add url to gist.github.com</li>
+        <li><a href="{% url 'core_workflow_create' %}">Create a Workflow</a>.</li>
+        <li>Perform/Log a Workflow.</li>
+    </ol>
+</div>
+{% endif %}
+
+{% endblock %}

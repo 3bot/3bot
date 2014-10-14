@@ -1,0 +1,2 @@
+recursive-include threebot/static *
+recursive-include threebot/templates *

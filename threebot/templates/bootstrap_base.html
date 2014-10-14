@@ -1,0 +1,53 @@
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+<!DOCTYPE html> 
+<html lang="en">
+  <head>
+    <title>3bot - {% block doctitle %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{% block docdescription %}{% endblock %}">
+    <meta name="author" content="{% block docauthor %}{% endblock %}">
+
+    <link rel="shortcut icon" href="{% static "threebot/img/logo_152.png" %}" type="image/png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="{% static "threebot/img/logo_128.png" %}">
+    
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{% static "threebot/css/bootstrap.css" %}">
+      
+    <!-- Custom styles for 3bot -->
+    <link rel="stylesheet" href="{% static "threebot/css/3bot.css" %}">
+    
+    <!-- Additional styles -->
+    {% render_block "css" %}
+    </head>
+
+  <body>
+    
+	
+  	{% block body %} {% endblock %}
+
+    <!-- Bootstrap core Scripts -->
+    <script src="{% static 'threebot/js/jquery.js' %}"></script>
+    <script src="{% static 'threebot/js/bootstrap.js' %}"></script>
+    <script src="{% static 'threebot/js/jquery-sortable.js' %}"></script>
+    <script src="{% static 'threebot/js/jquery-autosize.js' %}"></script>
+
+    <!-- Additional Scripts -->
+    {% render_block "js" %}
+     
+    {% csrf_token %}
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('textarea').on('focus', function(){
+            $(this).autosize();
+        });
+        $('textarea').on('focusout', function(){
+            $(this).trigger('autosize.destroy');
+        });
+      });
+    </script>
+  </body>
+</html>

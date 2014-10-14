@@ -1,0 +1,78 @@
+/* 3bot styles
+-------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+.workflow-success {
+  color: green;
+}
+
+.workflow-error {
+  color: red;
+}
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+  height: auto;
+  background-color: #eee;
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+  #footer {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+#wrap > .container {
+  padding: 60px 15px 0;
+}
+.container .credit {
+  margin: 20px 0;
+}
+
+code {
+  font-size: 80%;
+}
+
+.action-result {
+	background-color: whiteSmoke; 
+	border-left: 5px solid #ccc;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+.action-result-success {
+	border-color: #5cb85c;
+}
+
+.action-result-warning {
+	border-color: #f0ad4e;
+}
+
+.action-result-danger {
+	border-color: #d9534f;
+}

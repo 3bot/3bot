@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+delete Task
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Task: {{ task }}</h2>
+{% if affected_workflow_tasks %}
+<div class="alert alert-danger" role="alert">
+    <strong>Oh snap!</strong> The following Workflows are affected if you delete this task
+    <ul>
+        {% for wf_task in affected_workflow_tasks %}
+        <li>
+        <a href="{{ wf_task.workflow.get_absolute_url }}"><strong>{{ wf_task.workflow }}</strong></a>
+        </li>
+        {% endfor %}
+    </ul>
+    Make sure youre know what you are doing.
+{% else %}
+<div class="alert alert-success" role="alert"><strong>Well done!</strong> No workflows are affected if you delete this task.</div>
+{% endif %}
+</div>
+  <form action="." method="post" class="form-horizontal" role="form">
+    {% csrf_token %}
+	  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+			<select name="delete_group" id="delete_group" class="form-control">
+				<option value="No">No</option>
+				<option value="Yes">Yes</option>
+			</select>
+	      <p class="help-block">Are you sure?</p>
+	    </div>
+	  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" class="btn btn-danger" value="Confirm" />
+    </div>
+  </div>
+	
+</form>
+
+{% endblock %}

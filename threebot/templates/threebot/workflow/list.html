@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load threebot_tags %}
+{% load sekizai_tags %}
+
+{% block doctitle %}
+all Workflows
+{% endblock %}
+
+
+{% block content %}
+<h2>
+	Workflows
+	<span class="pull-right">
+		<a href="{% url 'core_workflow_create' %}" type="button" class="btn btn-primary btn-sm">Add Workflow</a>
+	</span>
+</h2>
+<p>
+	<small>Workflows are lists of Tasks that are performed in sequence. Select the Workflow you want to perform or edit.</small>
+</p>
+
+{% if workflows %}
+<div class="input-group" style="margin-bottom: 20px;"><span class="input-group-addon">Filter</span>
+    <input id="filter" type="text" class="form-control" onkeydown="clear_input(event, this);" placeholder="Type here..." autofocus>
+</div>
+
+<table class="table table-hover">
+	<thead>
+      	<tr>
+            <th>Name</th>
+            <th class="hidden-xs hidden-sm">Description</th>
+            <th>Last performed on</th>
+            <th>Team</th>
+            <th></th>
+      	</tr>
+    </thead>
+	<tbody class="searchable">
+	{% for workflow in workflows %}
+	<tr>
+		<td><a href="{{ workflow.get_absolute_url }}">{{ workflow.title }}</a></td>
+        <td class="hidden-xs hidden-sm">
+            <span title="{{ workflow.desc }}">
+                <small>
+                    {% if workflow.desc %}
+                    {{ workflow.desc|urlize|truncatechars:100 }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </small>
+            </span>
+        </td>
+        {% get_last_worker_for request workflow as worker %}
+        <td>{% if worker %}{{ worker.title }}{% else %}-{% endif %}</td>
+        <td>{{ workflow.owner }}</td>
+        {% get_presets_for request workflow as presets %}
+		<td>
+            {% if presets.all_presets_set and worker.is_accessible %}
+			<a href="{{ workflow.get_absolute_url }}#perform_workflow"><span title="This Workflow can be performed without any further interaction. This will use your last saved settings and worker." class="glyphicon glyphicon-play-circle"></span></a>
+            {% endif %}
+		</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% else %}
+<div class="alert alert-warning" role="alert"><strong>No Workflows!</strong> Go ahead and create some</div>
+<a href="{% url 'core_workflow_create' %}" type="button" class="btn btn-primary btn-lg">Add Workflow</a>
+{% endif %}
+
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$('#nav_workflows').addClass('active');   
+
+$(document).ready(function () {
+    (function ($) {
+        $('#filter').keyup(function () {
+            var rex = new RegExp($(this).val(), 'i');
+            $('.searchable tr').hide();
+            $('.searchable tr').filter(function () {
+                return rex.test($(this).text());
+            }).show();
+        })
+    }(jQuery));
+});
+
+function clear_input(evt, input) {
+    var code = evt.charCode || evt.keyCode;
+    if (code == 27) { //esc
+        input.value = '';
+    }
+}
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

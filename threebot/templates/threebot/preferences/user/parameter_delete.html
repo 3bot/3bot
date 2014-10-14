@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block doctitle %}
+delete User Parameter
+{% endblock %}
+
+
+{% block content %}
+
+<h2>User Parameter: {{ param }}</h2>
+  <form action="." method="post" class="form-horizontal" role="form">
+    {% csrf_token %}
+      <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+            <select name="delete_param" id="delete_param" class="form-control">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+          <p class="help-block">Are you sure?</p>
+        </div>
+      </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" class="btn btn-danger" value="Confirm" />
+    </div>
+  </div>
+    
+</form>
+{% endblock %}

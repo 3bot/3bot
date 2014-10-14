@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load org_tags %}
+{% load threebot_tags %}
+
+{% block content %}
+<h2>
+    Team: {{ organization }}
+    
+    {% if organization|can_be_administarated_by:request.user %}
+    <span class="pull-right">
+        <a href="{% url "organization_user_add" organization.pk %}" type="button" class="btn btn-primary btn-sm">Add a member</a>
+        <a href="{% url "organization_delete" organization.pk %}" type="button" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+    </span>
+    {% endif %}
+</h2>
+
+{% include "threebot/preferences/organization/_tab_navigation.html" %}
+
+<p>
+    <small>Manage Team and Members</small>
+</p>
+
+{% organization_users organization %}
+{% endblock %}

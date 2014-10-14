@@ -1,0 +1,80 @@
+{% extends "bootstrap_base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block doctitle %}
+Login
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <strong>Login</strong>
+        </div>
+        <div class="panel-body">
+          {% for error in auth_form.non_field_errors %}
+          <p class="text-danger">{{ error }}</p>                    
+          {% endfor %}
+
+          <form class="form-horizontal" role="form" action="." method="POST" accept-charset="UTF-8">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_username" class="col-sm-3 control-label">Username</label>
+              <div class="col-sm-9">
+                <input name="username" class="form-control" id="id_username" autofocus placeholder="Username" required type="text">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id_password" class="col-sm-3 control-label">Password</label>
+              <div class="col-sm-9">
+                <input name="password" class="form-control" id="id_password" placeholder="Password" required type="password">
+              </div>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}" />
+            <div class="form-group last">
+            <div class="col-sm-offset-3 col-sm-9">
+              <button type="submit" class="btn btn-success btn-lg"><strong>Sign in</strong></button>
+              <button type="reset" class="btn btn-default btn-lg">Reset</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="panel-footer">
+        <b>We are currently in private beta.</b> <br>
+		Please <a href="https://www.arteria.ch/de/#about-form-lead">get in touch</a> if you want to try 3bot, get more info or a demo.
+		<br>
+		
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+{% addtoblock "css" %}
+<style type="text/css">
+    /* CSS used here will be applied after bootstrap.css */
+
+body { 
+ background: url('/static/threebot/img/silberpfeil.jpg') no-repeat center center fixed; 
+ -webkit-background-size: cover;
+ -moz-background-size: cover;
+ -o-background-size: cover;
+ background-size: cover;
+}
+
+.panel-default {
+ opacity: 0.9;
+ margin-top:30px;
+}
+.form-group.last {
+ margin-bottom:0px;
+}
+</style>
+{% endaddtoblock %}
+
+{% endblock %}
