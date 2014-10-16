@@ -63,8 +63,8 @@ Next to `settings.py` you find `urls.py`. Add the patterns for `teams` and `thre
 
     urlpatterns = patterns('',
         url(r'^admin/', include(admin.site.urls)),
-        url(r'^', include('threebot.urls')),
         url(r'^teams/', include('organizations.urls')),
+        url(r'^', include('threebot.urls')),
     )
 
 
@@ -79,5 +79,6 @@ Start the development server and enjoy your fresh 3bot instance running under [h
     python manage.py runserver
 
 
-To get use of your new 3bot Application you need to set up a Worker. Workers are Mashines on whitch you can perform Workflows. For testing purposes we suggest to set up localhost as the first Worker. Therefor you first create new Worker at [http://127.0.0.1:8000/worker/add/](http://127.0.0.1:8000/worker/add/). Choose `127.0.0.1` as IP-Address, and `55556` as Port. Save your new Worker and switch to [https://gist.github.com/walterrenner/4d8863043404bec01d0f](https://gist.github.com/walterrenner/4d8863043404bec01d0f) for further instructions.
+To use your new 3bot application you need to set up a worker. A workers is a computer program that runs as a background process on machines. This could be a server, an embedded systems or your laptop. The worker executes the tasks of a workflow - they do perform. 
+For testing purposes we suggest to set up your first worker on localhost. Therefor you first create new Worker at [http://127.0.0.1:8000/worker/add/](http://127.0.0.1:8000/worker/add/). Choose `127.0.0.1` as IP-Address, and `55556` as port. Save your new worker head over to [https://gist.github.com/walterrenner/4d8863043404bec01d0f](https://gist.github.com/walterrenner/4d8863043404bec01d0f) for further instructions.
 
