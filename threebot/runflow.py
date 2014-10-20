@@ -29,7 +29,7 @@ def run_workflow(workflow_log, worker):
                       'workflow': slugify(workflow_log.workflow.title),
                       'workflow_log_time': workflow_log.date_created.strftime('%Y%m%d-%H%M%S'),
                       'script': {},
-                      'hooks': {},  # see hooks.rst
+                      'hooks': {},  # see doc/HOOKS.md
                       }
 
     # hooks for this workflow
