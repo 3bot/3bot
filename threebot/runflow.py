@@ -9,7 +9,7 @@ import threebot_crypto
 FLAGS = 0
 
 
-def run_workflow(workflow_log, worker):
+def run_workflow(workflow_log, worker, extra_context={}):
     """
     expects an empty workflow_log,
     performes its tasks on the given worker(s) and
@@ -42,7 +42,7 @@ def run_workflow(workflow_log, worker):
     ordered_workflows = order_workflow_tasks(workflow_log.workflow)
 
     for idx, workflow_task in enumerate(ordered_workflows):
-        template = render_template(workflow_log, workflow_task)
+        template = render_template(workflow_log, workflow_task, extra_context)
 
         if workflow_task.task.is_builtin:
             m = importCode(template, "test")
