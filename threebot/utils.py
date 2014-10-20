@@ -216,9 +216,12 @@ def render_template(workflow_log, workflow_task, mask=False, extra_context={}):
     # TODO: provide more information and document this type of inputs in knowledge base
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
-    
+
     # add extra context from plugins or 3rd party apps
     inputs = dict(list(inputs.items()) + list(extra_context.items()))
+    workflow_log.inputs = inputs
+    workflow_log.save()
+
     wf_context = Context(inputs)
 
     unrendered = workflow_task.task.template
