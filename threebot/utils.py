@@ -34,7 +34,7 @@ def has_admin_permission(user, organization):
 
 
 @login_required
-def getCurrOrg(request):
+def get_curr_org(request):
     org = Organization.objects.get(slug="3bot")  # request.user)
     request.session['currOrg'] = org.slug
     request.session.modified = True
