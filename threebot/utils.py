@@ -42,16 +42,18 @@ def get_curr_org(request):
 
 
 @login_required
-def get_my_orgs(request):
-    orgs = Organization.objects.filter(users=request.user)
+def get_my_orgs(request, an_user=None):
+    if request is not None and an_user is None:
+        an_user = request.user
+    orgs = Organization.objects.filter(users=an_user)
     if not orgs:
         default_org = Organization(slug='3bot', name="3bot")
         default_org.save()
-        org_user = OrganizationUser(organization=default_org, user=request.user, is_admin=True)
+        org_user = OrganizationUser(organization=default_org, user=an_user, is_admin=True)
         org_user.save()
         org_owner = OrganizationOwner(organization=default_org, organization_user=org_user)
         org_owner.save()
-        orgs = Organization.objects.filter(users=request.user)
+        orgs = Organization.objects.filter(users=an_user)
     return orgs
 
 
@@ -202,7 +204,7 @@ def render_templates(workflow_log, mask=False):
     return templates
 
 
-def render_template(workflow_log, workflow_task, mask=False):
+def render_template(workflow_log, workflow_task, mask=False, extra_context={}):
     # mask = True -> replace sensitive data like passwords
     inputs = workflow_log.inputs[str(workflow_task.id)]
 
@@ -214,7 +216,9 @@ def render_template(workflow_log, workflow_task, mask=False):
     # TODO: provide more information and document this type of inputs in knowledge base
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
-
+    
+    # add extra context from plugins or 3rd party apps
+    inputs = dict(list(inputs.items()) + list(extra_context.items()))
     wf_context = Context(inputs)
 
     unrendered = workflow_task.task.template
