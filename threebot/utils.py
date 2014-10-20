@@ -7,6 +7,10 @@ from .models import UserParameter
 from .models import OrganizationParameter
 from .models import WorkflowPreset, WorkflowTask, Worker, Workflow, Task, WorkflowLog, ParameterList
 
+import logging
+
+logger = logging.getLogger('3bot')
+
 
 def filter_workflow_log_history(workflow=None, teams=None, exit_code=None, user=None, worker=None, quantity=None):
     """returns a queryset of workflow-logs filtered by given parameters"""
@@ -204,26 +208,23 @@ def render_templates(workflow_log, mask=False):
     return templates
 
 
-def render_template(workflow_log, workflow_task, mask=False, extra_context={}):
+def render_template(workflow_log, workflow_task, mask=False):
     # mask = True -> replace sensitive data like passwords
     inputs = workflow_log.inputs[str(workflow_task.id)]
-
+    
     if mask and 'password' in inputs:
         # replace sensitive data with '***'
         for key, value in inputs['password'].iteritems():
             inputs['password'][key] = '***'
-
-    # TODO: provide more information and document this type of inputs in knowledge base
+            
+    # Update reserved identifiers /keywords
+    inputs['payload'] = workflow_log.inputs.get('payload', {}) 
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
-
-    # add extra context from plugins or 3rd party apps
-    inputs = dict(list(inputs.items()) + list(extra_context.items()))
-    workflow_log.inputs = inputs
-    workflow_log.save()
-
+    # TODO: provide more information and document this type of inputs in knowledge base
+     
+    # Script/tempate rendering
     wf_context = Context(inputs)
-
     unrendered = workflow_task.task.template
     template = Template(unrendered)
     rendered = template.render(wf_context)

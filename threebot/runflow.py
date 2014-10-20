@@ -6,10 +6,15 @@ from .utils import render_template, order_workflow_tasks, importCode
 from .botconnection import BotConnection
 import threebot_crypto
 
+import logging
+
+logger = logging.getLogger('3bot')
+
+
 FLAGS = 0
 
 
-def run_workflow(workflow_log, worker, extra_context={}):
+def run_workflow(workflow_log, worker):
     """
     expects an empty workflow_log,
     performes its tasks on the given worker(s) and
@@ -24,7 +29,7 @@ def run_workflow(workflow_log, worker, extra_context={}):
     conn = BotConnection(WORKER_ENDPOINT, WORKER_SECRET_KEY)
     conn.connect()
 
-    # make a json
+    # Make a JSON
     request_header = {'workflow_log_id': workflow_log.id,
                       'workflow': slugify(workflow_log.workflow.title),
                       'workflow_log_time': workflow_log.date_created.strftime('%Y%m%d-%H%M%S'),
@@ -42,7 +47,7 @@ def run_workflow(workflow_log, worker, extra_context={}):
     ordered_workflows = order_workflow_tasks(workflow_log.workflow)
 
     for idx, workflow_task in enumerate(ordered_workflows):
-        template = render_template(workflow_log, workflow_task, extra_context)
+        template = render_template(workflow_log, workflow_task)
 
         if workflow_task.task.is_builtin:
             m = importCode(template, "test")
