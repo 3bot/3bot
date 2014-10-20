@@ -230,8 +230,8 @@ def detail_with_list(request, slug, template='threebot/workflow/detail_with_list
         workflow_log.save()
 
         wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
-        wf_preset.defaults.update({'worker_id': worker_id})
-        wf_preset.defaults.update({'list_id': list_id})
+        wf_preset.defaults.update({'worker_id': worker.id})
+        wf_preset.defaults.update({'list_id': parameter_list.id})
         wf_preset.save()
 
         ans = run_workflow(workflow_log, worker)
