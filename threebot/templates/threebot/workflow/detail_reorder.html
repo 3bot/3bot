@@ -1,25 +1,11 @@
-{% extends "base.html" %}
+{% extends "threebot/workflow/detail_base.html" %}
+{% load staticfiles %}
 {% load sekizai_tags %}
+{% load threebot_tags %}
 
-{% block doctitle %}
-reorder Workflow: {{ workflow }}
-{% endblock %}
-
-{% block content %}
-
-{% addtoblock "css" %}
-{% load static %}
-    <link rel="stylesheet" href="{% static "threebot/css/sortable.css" %}">
-{% endaddtoblock "css" %}
-
-<h2>reorder Workflow: <a href="{% url 'core_workflow_detail' workflow.slug %}">{{ workflow }}</a></h2>
-<p>
-  <small>{{ workflow.desc|urlize }}</small>
-</p>
-
+{% block inner_content %}
 <div class="row">
   <div class="col-sm-8">
-    <h3>Tasks</h3>
     <div class="alert alert-success" role="alert"><strong>Drop Tasks here.</strong> To remove Tasks hit the x Button</div>
     <ol style="margin-bottom:40px;" class="list-unstyled task-target" id="task_target">
     {% if workflow_tasks %}

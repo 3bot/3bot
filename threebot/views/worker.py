@@ -20,7 +20,7 @@ def list(request, template='threebot/worker/list.html'):
 
 
 @login_required
-def detail(request, slug, template='threebot/worker/detail.html'):
+def detail_edit(request, slug, template='threebot/worker/detail_edit.html'):
     orgs = get_my_orgs(request)
     worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
 
@@ -49,26 +49,38 @@ def detail(request, slug, template='threebot/worker/detail.html'):
 
 
 @login_required
+def detail_manual(request, slug, template='threebot/worker/detail_manual.html'):
+    orgs = get_my_orgs(request)
+    worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
+
+    return render_to_response(template, {'request': request,
+                                         'worker': worker,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail_digest(request, slug, template='threebot/worker/detail_digest.html'):
+    orgs = get_my_orgs(request)
+    worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
+    logs = filter_workflow_log_history(worker=worker, quantity=20)
+
+    return render_to_response(template, {'request': request,
+                                         'worker': worker,
+                                         'logs': logs,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
 def create(request, template='threebot/worker/create.html'):
     form = WorkerCreateForm(request.POST or None, request=request)
 
     if form.is_valid():
         worker = form.save()
 
-        return redirect('core_worker_manual', slug=worker.slug)
+        return redirect('core_worker_detail_manual', slug=worker.slug)
 
     return render_to_response(template, {'request': request,
                                          'form': form,
-                                        }, context_instance=RequestContext(request))
-
-
-@login_required
-def manual(request, slug, template='threebot/worker/manual.html'):
-    orgs = get_my_orgs(request)
-    worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
-
-    return render_to_response(template, {'request': request,
-                                         'worker': worker,
                                         }, context_instance=RequestContext(request))
 
 

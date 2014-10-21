@@ -22,6 +22,7 @@ from jsonfield import JSONField
 VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of letters, numbers, and underscores. Python Keywords are not allowed."
 
 
+
 def is_valid_identifier(identifier):
     if not re.match('[_A-Za-z][_a-zA-Z0-9]*$', identifier) or keyword.iskeyword(identifier):
         return False
@@ -41,7 +42,9 @@ class Worker(models.Model):
     ip = models.IPAddressField("IP-Address",)
     addr = models.CharField(max_length=200, null=True, blank=True, help_text='For now we use the IP to connect to the worker')
     port = models.PositiveIntegerField(default=55555)
-    secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key')
+    secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key. Never share yours.')
+
+    muted = models.BooleanField(default=False, help_text="Mute a Worker to prevent accessability checks and improve performance.")
 
     pre_task = models.TextField(null=True, blank=True, help_text='this will run as a Script before the worker performs a workflow')
     post_task = models.TextField(null=True, blank=True, help_text='this will run as a Script after the worker has performed a workflow')
@@ -53,10 +56,13 @@ class Worker(models.Model):
 
     @property
     def is_accessible(self):
+        if self.muted:
+            return False
+
         try:
             from .botconnection import BotConnection
             from .runflow import send_script
-        
+
             protocol = "tcp"
             WORKER_ENDPOINT = "%s://%s:%s" % (protocol, self.ip, str(self.port))
             WORKER_SECRET_KEY = str(self.secret_key)
@@ -69,7 +75,7 @@ class Worker(models.Model):
 
             if resp and resp['type'] == 'ACK':
                 return True
-        except: 
+        except:
             pass
         return False
 
@@ -165,7 +171,7 @@ class Task(models.Model):
 
     @property
     def type(self):
-        known_types = ['sh', 'python', 'ruby', 'pearl', 'bash', 'php', 'node', 'osascript']
+        known_types = ['bash', 'sh', 'python', 'ruby', 'pearl', 'php', 'node', 'osascript']
 
         if self.is_builtin:
             return "built-in"

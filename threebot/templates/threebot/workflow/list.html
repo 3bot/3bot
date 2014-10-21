@@ -31,6 +31,7 @@ all Workflows
             <th>Last performed on</th>
             <th>Team</th>
             <th></th>
+            <th></th>
       	</tr>
     </thead>
 	<tbody class="searchable">
@@ -57,6 +58,15 @@ all Workflows
 			<a href="{{ workflow.get_absolute_url }}#perform_workflow"><span title="This Workflow can be performed without any further interaction. This will use your last saved settings and worker." class="glyphicon glyphicon-play-circle"></span></a>
             {% endif %}
 		</td>
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-cog"></span> 
+              <span class="caret"></span>
+            </button>
+              {% include 'threebot/workflow/_workflow_actions_menu.html' %}
+          </div>
+        </td>
 	</tr>
 	{% endfor %}
 	</tbody>
@@ -70,8 +80,6 @@ all Workflows
 
 {% addtoblock "js" %}
 <script type="text/javascript">
-$('#nav_workflows').addClass('active');   
-
 $(document).ready(function () {
     (function ($) {
         $('#filter').keyup(function () {

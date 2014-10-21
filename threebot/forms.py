@@ -141,7 +141,7 @@ class WorkerForm(forms.ModelForm):
     """Base Worker Form"""
     class Meta:
         model = Worker
-        fields = ['title', 'ip', 'port', 'secret_key', 'pre_task', 'post_task', ]
+        fields = ['title', 'ip', 'port', 'muted', 'secret_key', 'pre_task', 'post_task', ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', }),
             'ip': forms.TextInput(attrs={'class': 'form-control', }),
@@ -160,6 +160,7 @@ class WorkerCreateForm(WorkerForm):
     """Form to create a Worker"""
     class Meta(WorkerForm.Meta):
         fields = ['owner', ] + WorkerForm.Meta.fields
+        exclude = ['muted']
         WorkerForm.Meta.widgets['owner'] = forms.Select(attrs={'class': 'form-control'})
 
     def __init__(self, *args, **kwargs):

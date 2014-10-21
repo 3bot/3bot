@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block doctitle %}
+Task - {{ task }}
+{% endblock %}
+
+{% block content %}
+<h2>
+  Task - {{ task }}<br>
+</h2>
+
+<div class="row">
+  <div class="col-lg-8">
+    <ul class="list-inline">
+      <li><strong>Team:</strong> {{ task.owner }}</li>
+      <li><strong>Type:</strong> <span class="label label-default">{{ task.type }}</span></li>
+      <li class="hidden-xs"><strong>Description:</strong> {{ task.desc|truncatechars:75 }}</li>
+    </ul>
+  </div>
+</div>
+
+<div class="row" style="padding-top:20px; padding-bottom:25px;">
+  <div class="col-lg-8">
+    <ul class="nav nav-tabs" role="tablist">
+      {% url 'core_task_detail' task.slug as core_task_detail_url %}
+      <li {% if request.path == core_task_detail_url %}class="active"{% endif %}><a href="{{ core_task_detail_url }}">Edit</a></li>
+      
+      {% url 'core_task_detail_digest' task.slug as core_task_detail_digest_url %}
+      <li {% if request.path == core_task_detail_digest_url %}class="active"{% endif %}><a href="{{ core_task_detail_digest_url }}">Digest</a></li>
+
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></a>
+        {% include 'threebot/task/_task_actions_menu.html' %}
+     </li>
+    </ul>
+  </div>
+</div>
+
+{% block inner_content %}
+{% endblock %}
+
+{% endblock %}

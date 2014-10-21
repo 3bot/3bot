@@ -1,6 +1,5 @@
 import json
 
-from django import forms
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -51,7 +50,19 @@ def create(request, template='threebot/workflow/create.html'):
 
 
 @login_required
-def edit(request, slug, template='threebot/workflow/edit.html'):
+def detail_digest(request, slug, template='threebot/workflow/detail_digest.html'):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+    logs = filter_workflow_log_history(workflow=workflow, quantity=20)
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'logs': logs,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -77,7 +88,7 @@ def edit(request, slug, template='threebot/workflow/edit.html'):
 
 
 @login_required
-def detail(request, slug, template='threebot/workflow/detail.html'):
+def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -193,7 +204,7 @@ def detail(request, slug, template='threebot/workflow/detail.html'):
 
 
 @login_required
-def detail_with_list(request, slug, template='threebot/workflow/detail_with_list.html'):
+def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf_with_list.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -262,14 +273,14 @@ def delete(request, slug, template='threebot/workflow/delete.html'):
             workflow.delete()
             return redirect('core_workflow_list')
         else:
-            return redirect('core_workflow_edit', slug=workflow.slug)
+            return redirect('core_workflow_detail_edit', slug=workflow.slug)
 
     return render_to_response(template, {'workflow': workflow,
                                         }, context_instance=RequestContext(request))
 
 
 @login_required
-def reorder(request, slug, template='threebot/workflow/reorder.html'):
+def detail_reorder(request, slug, template='threebot/workflow/detail_reorder.html'):
     workflow = Workflow.objects.get(slug=slug)
     tasks = Task.objects.filter(owner=workflow.owner)
     workflow_tasks = order_workflow_tasks(workflow)

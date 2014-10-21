@@ -24,7 +24,7 @@ def list(request, template='threebot/task/list.html'):
 
 
 @login_required
-def detail(request, slug, template='threebot/task/detail.html'):
+def detail_edit(request, slug, template='threebot/task/detail_edit.html'):
     orgs = get_my_orgs(request)
     task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_builtin=False)
 
@@ -49,6 +49,19 @@ def detail(request, slug, template='threebot/task/detail.html'):
     return render_to_response(template, {'request': request,
                                          'task': task,
                                          'form': form,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail_digest(request, slug, template='threebot/task/detail_digest.html'):
+    orgs = get_my_orgs(request)
+    task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_builtin=False)
+
+    if task.is_builtin and not has_admin_permission(request.user, task.owner):
+        raise Http404
+
+    return render_to_response(template, {'request': request,
+                                         'task': task,
                                         }, context_instance=RequestContext(request))
 
 
