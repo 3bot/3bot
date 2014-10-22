@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 from organizations.models import Organization
 from organizations.utils import create_organization
 
-from .utils import get_possible_parameters, get_accessible_worker, getCurrOrg
+from .utils import get_possible_parameters, get_accessible_worker, get_curr_org
 from .utils import get_preset_param, get_preset_worker, get_possible_owners, get_possible_lists, get_preset_list
 from .models import Worker
 from .models import Workflow
@@ -167,7 +167,7 @@ class WorkerCreateForm(WorkerForm):
         request = kwargs.pop('request')
         super(WorkerCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class WorkerChangeForm(WorkerForm):
@@ -202,7 +202,7 @@ class TaskCreateForm(TaskForm):
         request = kwargs.pop('request')
         super(TaskCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class TaskChangeForm(TaskForm):
@@ -241,7 +241,7 @@ class WorkflowCreateForm(WorkflowForm):
         request = kwargs.pop('request')
         super(WorkflowCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class WorkflowChangeForm(WorkflowForm):

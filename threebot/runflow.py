@@ -6,6 +6,11 @@ from .utils import render_template, order_workflow_tasks, importCode
 from .botconnection import BotConnection
 import threebot_crypto
 
+import logging
+
+logger = logging.getLogger('3bot')
+
+
 FLAGS = 0
 
 
@@ -24,12 +29,12 @@ def run_workflow(workflow_log, worker):
     conn = BotConnection(WORKER_ENDPOINT, WORKER_SECRET_KEY)
     conn.connect()
 
-    # make a json
+    # Make a JSON
     request_header = {'workflow_log_id': workflow_log.id,
                       'workflow': slugify(workflow_log.workflow.title),
                       'workflow_log_time': workflow_log.date_created.strftime('%Y%m%d-%H%M%S'),
                       'script': {},
-                      'hooks': {},  # see hooks.rst
+                      'hooks': {},  # see doc/HOOKS.md
                       }
 
     # hooks for this workflow

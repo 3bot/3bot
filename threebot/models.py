@@ -20,7 +20,7 @@ from jsonfield import JSONField
 
 
 VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of letters, numbers, and underscores. Python Keywords are not allowed."
-
+RESERVED_IDENTIFIERS = ['log', 'payload']
 
 
 def is_valid_identifier(identifier):
@@ -155,7 +155,7 @@ class Task(models.Model):
         for i in found_inputs:
             msg = '"%s" is not a valid input declaration.' % str(i.encode('utf-8').strip())
             inp = i.strip().split(".")
-            if not inp[0] == 'log':
+            if inp[0] not in RESERVED_IDENTIFIERS:
                 try:
                     if not inp[0] or not inp[1]:
                         raise ValidationError({field: [msg, ]})
