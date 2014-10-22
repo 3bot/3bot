@@ -44,7 +44,7 @@
   </h3>
   <div class="input-group" style="margin-bottom: 20px;"><span class="input-group-addon">Filter</span>
 
-      <input id="filter" type="text" class="form-control" placeholder="Type here...">
+      <input id="filter" type="text" class="form-control" onkeydown="clear_input(event, this);" placeholder="Type here...">
   </div>
 
   <ol class="list-unstyled task-pool searchable">
@@ -130,6 +130,13 @@ $(document).ready(function () {
         })
     }(jQuery));
 });
+
+function clear_input(evt, input) {
+    var code = evt.charCode || evt.keyCode;
+    if (code == 27) { //esc
+        input.value = '';
+    }
+}
 </script>
 
 {% endaddtoblock "js" %}

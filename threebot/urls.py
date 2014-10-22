@@ -37,6 +37,7 @@ urlpatterns = patterns('threebot.views',
     url(r'^user/parameter/(?P<id>[-\w]+)/delete/$', view='preferences.user_parameter_delete', name='core_user_parameter_delete'),
     url(r'^user/parameter/(?P<id>[-\w]+)/$', view='preferences.user_parameter_detail', name='core_user_parameter_detail'),
     url(r'^user/parameter/$', view='preferences.user_parameter', name='core_user_parameter'),
+    url(r'^user/activity/$', view='preferences.user_activity', name='core_user_activity'),
     url(r'^user/$', view='preferences.user_profile', name='core_user_profile'),
 
     url(r'^teams/add/$', view='preferences.organization_add', name='core_organization_add'),

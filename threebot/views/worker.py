@@ -95,7 +95,7 @@ def delete(request, slug, template='threebot/worker/delete.html'):
 
     if request.method == 'POST':
         new_data = request.POST.copy()
-        if new_data['delete_group'] == 'Yes':
+        if new_data['sure_delete'] == 'Yes':
             worker.delete()
             return redirect('core_worker_list')
         else:

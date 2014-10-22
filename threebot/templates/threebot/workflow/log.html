@@ -78,6 +78,10 @@ Logged {{ workflow }}
 $(function() {
     $('.show-tooltip').tooltip({placement: 'bottom'});
 });
+
+setInterval(function() {
+      window.location.reload();
+    }, 10000);
 </script>
 {% endaddtoblock "js" %}
 

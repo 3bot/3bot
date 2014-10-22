@@ -44,7 +44,7 @@ class Worker(models.Model):
     port = models.PositiveIntegerField(default=55555)
     secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key. Never share yours.')
 
-    muted = models.BooleanField(default=False, help_text="Mute a Worker to prevent accessability checks and improve performance.")
+    muted = models.BooleanField(default=False, help_text="Mute a Worker to prevent accessibility checks and improve performance.")
 
     pre_task = models.TextField(null=True, blank=True, help_text='this will run as a Script before the worker performs a workflow')
     post_task = models.TextField(null=True, blank=True, help_text='this will run as a Script after the worker has performed a workflow')
@@ -351,15 +351,17 @@ class WorkflowTask(models.Model):
 class WorkflowLog(models.Model):
     SUCCESS = 0
     ERROR = 1
+    PENDING = 2
 
     EXIT_CODE_CHOICES = (
         (SUCCESS, 'Success'),
         (ERROR, 'Error'),
+        (PENDING, 'Pending'),
     )
 
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
     date_created = models.DateTimeField(auto_now_add=True, help_text='Date the workflow was performed')
-    exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=SUCCESS)
+    exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=PENDING)
     performed_by = models.ForeignKey(User, help_text="The User who performed the Worfkflow")
     performed_on = models.ForeignKey(Worker, help_text="The Worker Worfkflow was performed on")
 

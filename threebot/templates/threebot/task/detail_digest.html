@@ -17,12 +17,22 @@
 <div class="row">
   <div class="col-lg-8">
     <p>
+      {% if task.changelog %}
       {{ task.changelog|urlize|linebreaks }}
+      {% else %}
+      ---
+      {% endif %}
     </p>
   </div>
 </div>
 
 <h4>Workflows</h4>
-show in which workflows this task exists
+<ul class="list-unstyled">
+{% for workflow in workflows %}
+<li><a href="{{ workflow.get_absolute_url }}">{{ workflow }}</a></li>
+{% empty %}
+No Workflows found
+{% endfor %}
+</ul>
 
 {% endblock %}

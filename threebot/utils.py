@@ -183,7 +183,9 @@ def create_workflow_with(task):
     return workflow
 
 
-def clone_task_for_team(task, team):
+def clone_task_for_team(user, task, team):
+    # TODO: check for readonly and built-in tasks --> user need admin permission
+    # TODO: check if user is member of both teams --> task.owner and team
     cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
     cloned_task.save()
     return cloned_task
@@ -211,18 +213,18 @@ def render_templates(workflow_log, mask=False):
 def render_template(workflow_log, workflow_task, mask=False):
     # mask = True -> replace sensitive data like passwords
     inputs = workflow_log.inputs[str(workflow_task.id)]
-    
+
     if mask and 'password' in inputs:
         # replace sensitive data with '***'
         for key, value in inputs['password'].iteritems():
             inputs['password'][key] = '***'
-            
+
     # Update reserved identifiers /keywords
-    inputs['payload'] = workflow_log.inputs.get('payload', {}) 
+    inputs['payload'] = workflow_log.inputs.get('payload', {})
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
     # TODO: provide more information and document this type of inputs in knowledge base
-     
+
     # Script/tempate rendering
     wf_context = Context(inputs)
     unrendered = workflow_task.task.template

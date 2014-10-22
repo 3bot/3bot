@@ -6,7 +6,7 @@
 {% block inner_content %}
 <div class="row">
   {% if workflow_tasks %}
-  <div class="col-sm-6">
+  <div class="col-lg-6">
   <form method="post" action="." id="workflow_form" class="form-horizontal" role="form">
     {% csrf_token %}
   <h3>Worker</h3>
@@ -70,7 +70,7 @@
     <input type="submit" id="perform_workflow" class="btn btn-success btn-lg btn-block" value="Perform" style="margin-bottom: 20px;">
   </form>
   </div>
-  <div class="col-sm-6">
+  <div class="col-lg-6">
     <h3>Log History</h3>
     {% if logs %}
     {% for log in logs %}

@@ -39,6 +39,7 @@ all Tasks
     <tbody class="searchable">
 	{% for task in tasks %}
 	<tr id="{{ task.id }}">
+		<td>
       {% if not task.is_builtin and not task.is_readonly %}
         <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
       {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
@@ -46,6 +47,7 @@ all Tasks
       {% else %}
         {{ task.title }}
       {%endif%}
+    </td>
     <td class="hidden-xs hidden-sm">
       <span title="{{ task.desc }}">
         <small>

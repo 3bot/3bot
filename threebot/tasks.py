@@ -17,10 +17,6 @@ FLAGS = 0
 
 
 @background(schedule=1)
-def say_hello(id):
-    print "hello world"
-
-
 def run_workflow(workflow_log_id):
     """
     expects an empty workflow_log,

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 from organizations.models import Organization
-from ..models import Task, WorkflowTask
+from ..models import Task, WorkflowTask, Workflow
 from ..utils import get_my_orgs, create_workflow_with, has_admin_permission, clone_task_for_team
 from ..forms import TaskChangeForm, TaskCreateForm, TaskImportForm
 
@@ -49,6 +49,7 @@ def detail_edit(request, slug, template='threebot/task/detail_edit.html'):
     return render_to_response(template, {'request': request,
                                          'task': task,
                                          'form': form,
+                                         'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)
                                         }, context_instance=RequestContext(request))
 
 
@@ -57,11 +58,15 @@ def detail_digest(request, slug, template='threebot/task/detail_digest.html'):
     orgs = get_my_orgs(request)
     task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_builtin=False)
 
+    # get all workflows this task is used in
+    workflows = Workflow.objects.filter(tasks__id=task.id)
+
     if task.is_builtin and not has_admin_permission(request.user, task.owner):
         raise Http404
 
     return render_to_response(template, {'request': request,
                                          'task': task,
+                                         'workflows': workflows,
                                         }, context_instance=RequestContext(request))
 
 
@@ -142,11 +147,9 @@ def create_workflow(request, slug):
 def clone_for_team(request, taskslug, teamslug):
     orgs = get_my_orgs(request)
     task = get_object_or_404(Task, owner__in=orgs, slug=taskslug)
-
-    # TODO: check if user is in both teams and not task is builtin or readonly
     team = Organization.objects.get(slug=teamslug)
 
-    cloned_task = clone_task_for_team(task, team)
+    cloned_task = clone_task_for_team(request.user, task, team)
 
     if cloned_task.is_builtin or cloned_task.is_readonly:
         return redirect('core_task_list')
@@ -162,16 +165,15 @@ def delete(request, slug, template='threebot/task/delete.html'):
     """
     orgs = get_my_orgs(request)
     task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_readonly=False, is_builtin=False)
-    affected_workflow_tasks = WorkflowTask.objects.filter(task=task)
 
     if request.method == 'POST':
         new_data = request.POST.copy()
-        if new_data['delete_group'] == 'Yes':
+        if new_data['sure_delete'] == 'Yes':
             task.delete()
             return redirect('core_task_list')
         else:
             return redirect('core_task_detail', slug=task.slug)
 
     return render_to_response(template, {'task': task,
-                                         'affected_workflow_tasks': affected_workflow_tasks,
+                                         'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)
                                         }, context_instance=RequestContext(request))

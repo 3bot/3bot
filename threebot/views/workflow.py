@@ -14,7 +14,7 @@ from ..models import OrganizationParameter, ParameterList
 from ..models import WorkflowLog
 from ..utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
 from ..forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
-from ..runflow import run_workflow
+from ..tasks import run_workflow
 
 
 @login_required
@@ -184,10 +184,10 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
             wf_preset.save()
 
         worker = Worker.objects.get(id=worker_id)
-        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, performed_by=request.user, performed_on=worker)
+        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, outputs={}, performed_by=request.user, performed_on=worker)
         workflow_log.save()
 
-        ans = run_workflow(workflow_log, worker)
+        run_workflow(workflow_log.id)
 
         return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
@@ -237,7 +237,7 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
 
             input_dict['%s' % wf_task.id] = l_input_dict
 
-        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, performed_by=request.user, performed_on=worker)
+        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, outputs={}, performed_by=request.user, performed_on=worker)
         workflow_log.save()
 
         wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
@@ -245,7 +245,7 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
         wf_preset.defaults.update({'list_id': parameter_list.id})
         wf_preset.save()
 
-        ans = run_workflow(workflow_log, worker)
+        run_workflow(workflow_log.id)
 
         return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
@@ -269,7 +269,7 @@ def delete(request, slug, template='threebot/workflow/delete.html'):
 
     if request.method == 'POST':
         new_data = request.POST.copy()
-        if new_data['delete_workflow'] == 'Yes':
+        if new_data['sure_delete'] == 'Yes':
             workflow.delete()
             return redirect('core_workflow_list')
         else:
@@ -343,8 +343,8 @@ def replay(request, slug, id):
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
     old_log = get_object_or_404(WorkflowLog, id=id)
-    new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, performed_by=request.user, performed_on=old_log.performed_on)
+    new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, outputs={}, performed_by=request.user, performed_on=old_log.performed_on)
     new_log.save()
 
-    ans = run_workflow(new_log, old_log.performed_on)
+    run_workflow(new_log.id)
     return redirect('core_wokflow_log_detail', slug=slug, id=new_log.id)

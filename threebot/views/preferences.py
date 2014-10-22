@@ -9,12 +9,20 @@ from organizations.models import Organization, OrganizationUser
 from ..models import OrganizationParameter
 from ..models import UserParameter
 from ..forms import UserParameterCreateForm, OrganizationParameterCreateForm, OrganizationCreateForm
+from ..forms import OrganizationParameterFormSet
+from ..utils import filter_workflow_log_history
 
 
 @login_required
 def user_profile(request, template='threebot/preferences/user/profile.html'):
+    token = ""
+    try:
+        from rest_framework.authtoken.models import Token
+        token = Token.objects.get(user=request.user)
+    except Exception, e:
+        pass
     return render_to_response(template, {'request': request,
-                                         'profile': True,
+                                         'token': token,
                                         }, context_instance=RequestContext(request))
 
 
@@ -31,7 +39,14 @@ def user_parameter(request, template='threebot/preferences/user/parameter.html')
     return render_to_response(template, {'request': request,
                                          'parameter_list': user_parameter,
                                          'form': form,
-                                         'parameter': True,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def user_activity(request, template='threebot/preferences/user/activity.html'):
+    logs = filter_workflow_log_history(user=request.user, quantity=20)
+    return render_to_response(template, {'request': request,
+                                         'logs': logs
                                         }, context_instance=RequestContext(request))
 
 
@@ -87,16 +102,17 @@ def organization_parameter(request, slug, template='threebot/preferences/organiz
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     organization_parameter = OrganizationParameter.objects.filter(owner=organization)
-    form = OrganizationParameterCreateForm(request.POST or None, org=organization)
+    formset = OrganizationParameterFormSet(request.POST or None, queryset=organization_parameter)
 
-    if form.is_valid():
-        form.save()
+    if formset.is_valid():
+        for form in formset:
+            form.cleaned_data['owner'] = organization
+        formset.save()
 
     return render_to_response(template, {'request': request,
                                          'organization': organization,
                                          'parameter_list': organization_parameter,
-                                         'form': form,
-                                         'parameter': True,
+                                         'formset': formset,
                                         }, context_instance=RequestContext(request))
 
 

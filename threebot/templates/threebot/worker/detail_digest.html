@@ -4,24 +4,6 @@
 {% load threebot_tags %}
 
 {% block inner_content %}
-<h4>Description</h4>
-<div class="row">
-  <div class="col-lg-8">
-    <p>
-      {{ worker.desc|urlize|linebreaks }}
-    </p>
-  </div>
-</div>
-
-<h4>Changelog</h4>
-<div class="row">
-  <div class="col-lg-8">
-    <p>
-      {{ worker.changelog|urlize|linebreaks }}
-    </p>
-  </div>
-</div>
-
 <h3>Log History {% if logs %}(latest {{ logs|length }}){% endif %}</h3>
 <div class="row">
   <div class="col-lg-8">

@@ -1,4 +1,6 @@
 from django import forms
+from django.forms.models import modelformset_factory
+from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from organizations.models import Organization
 from organizations.utils import create_organization
@@ -48,14 +50,21 @@ class OrganizationParameterCreateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        org = kwargs.pop('org')
+        #org = kwargs.pop('org')
         super(OrganizationParameterCreateForm, self).__init__(*args, **kwargs)
-        self.fields['owner'].initial = org
+        #self.fields['owner'].initial = org
 
 
 class OrganizationParameterChangeForm(OrganizationParameterCreateForm):
     class Meta(OrganizationParameterCreateForm.Meta):
         exclude = ('owner',)
+
+
+OrganizationParameterFormSet = modelformset_factory(
+    OrganizationParameter,
+    form=OrganizationParameterChangeForm,
+    extra=3,
+    )
 
 
 class ParameterListSelectForm(forms.Form):
