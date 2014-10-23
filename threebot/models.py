@@ -61,7 +61,7 @@ class Worker(models.Model):
 
         try:
             from .botconnection import BotConnection
-            from .runflow import send_script
+            from .tasks import send_script
 
             protocol = "tcp"
             WORKER_ENDPOINT = "%s://%s:%s" % (protocol, self.ip, str(self.port))
