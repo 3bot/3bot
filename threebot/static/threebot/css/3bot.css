@@ -14,6 +14,40 @@ body {
 .workflow-error {
   color: red;
 }
+
+.workflow-pending {
+  color: orange;
+}
+
+.spin{
+     -webkit-transform-origin: 50% 50%;
+     transform-origin:50% 50%;
+     -ms-transform-origin:50% 50%; /* IE 9 */
+     -webkit-animation: spin 1.6s infinite linear;
+     -moz-animation: spin 1.6s infinite linear;
+     -o-animation: spin 1.6s infinite linear;
+     animation: spin 1.6s infinite linear;
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
 /* Wrapper for page content to push down footer */
 #wrap {
   min-height: 100%;

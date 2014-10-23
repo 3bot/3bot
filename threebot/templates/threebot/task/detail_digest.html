@@ -8,7 +8,7 @@
 <div class="row">
   <div class="col-lg-8">
     <p>
-      {{ task.desc|urlize|linebreaks }}
+      {{ task.desc|default:"---"|urlize|linebreaks }}
     </p>
   </div>
 </div>
@@ -17,11 +17,7 @@
 <div class="row">
   <div class="col-lg-8">
     <p>
-      {% if task.changelog %}
-      {{ task.changelog|urlize|linebreaks }}
-      {% else %}
-      ---
-      {% endif %}
+      {{ task.changelog|default:"---"|urlize|linebreaks }}
     </p>
   </div>
 </div>

@@ -41,16 +41,12 @@ all Workflows
         <td class="hidden-xs hidden-sm">
             <span title="{{ workflow.desc }}">
                 <small>
-                    {% if workflow.desc %}
-                    {{ workflow.desc|urlize|truncatechars:100 }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ workflow.desc|default:"---"|urlize|truncatechars:100 }}
                 </small>
             </span>
         </td>
         {% get_last_worker_for request workflow as worker %}
-        <td>{% if worker %}{{ worker.title }}{% else %}-{% endif %}</td>
+        <td>{{ worker.title|default:"---" }}</td>
         <td>{{ workflow.owner }}</td>
         {% get_presets_for request workflow as presets %}
 		<td>

@@ -6,10 +6,13 @@ from django.template import RequestContext
 
 from organizations.models import Organization, OrganizationUser
 
-from ..models import OrganizationParameter
-from ..models import UserParameter
-from ..forms import UserParameterCreateForm, OrganizationParameterCreateForm, OrganizationCreateForm
-from ..forms import OrganizationParameterFormSet
+from ..models import OrganizationParameter, UserParameter, ParameterList
+from ..forms import (
+    UserParameterCreateForm,
+    OrganizationParameterCreateForm,
+    OrganizationCreateForm,
+    make_organization_parameter_formset,
+    make_user_parameter_formset)
 from ..utils import filter_workflow_log_history
 
 
@@ -29,16 +32,17 @@ def user_profile(request, template='threebot/preferences/user/profile.html'):
 @login_required
 def user_parameter(request, template='threebot/preferences/user/parameter.html'):
     user_parameter = UserParameter.objects.all().filter(owner=request.user)
-    form = UserParameterCreateForm(request.POST or None, user=request.user)
 
-    if form.is_valid():
-        form.save()
-        if 'next' in form.cleaned_data:
-            return HttpResponseRedirect(form.cleaned_data['next'])
+    ParamFormset = make_user_parameter_formset(request.user)
+    formset = ParamFormset(
+                 request.POST or None,
+                 queryset=user_parameter)
+
+    if formset.is_valid():
+        formset.save()
 
     return render_to_response(template, {'request': request,
-                                         'parameter_list': user_parameter,
-                                         'form': form,
+                                         'formset': formset,
                                         }, context_instance=RequestContext(request))
 
 
@@ -61,7 +65,6 @@ def user_parameter_detail(request, id, template='threebot/preferences/user/param
     return render_to_response(template, {'request': request,
                                          'param': user_parameter,
                                          'form': form,
-                                         'parameter': True,
                                         }, context_instance=RequestContext(request))
 
 
@@ -102,17 +105,46 @@ def organization_parameter(request, slug, template='threebot/preferences/organiz
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     organization_parameter = OrganizationParameter.objects.filter(owner=organization)
-    formset = OrganizationParameterFormSet(request.POST or None, queryset=organization_parameter)
+    ParamFormset = make_organization_parameter_formset(organization)
+    formset = ParamFormset(
+                 request.POST or None,
+                 queryset=organization_parameter)
 
     if formset.is_valid():
-        for form in formset:
-            form.cleaned_data['owner'] = organization
         formset.save()
+
+    return render_to_response(template, {'request': request,
+                                         'organization': organization,
+                                         'formset': formset,
+                                         'lists': ParameterList.objects.filter(owner=organization)
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def organization_parameter_list(request, slug, list_id, template='threebot/preferences/organization/parameter_list.html'):
+    organization = get_object_or_404(Organization, slug=slug)
+
+    #checks if we have access
+    get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
+
+    p_list = ParameterList.objects.get(id=list_id)
+    organization_parameter = p_list.parameters.all()
+    ParamFormset = make_organization_parameter_formset(organization)
+    formset = ParamFormset(
+                 request.POST or None,
+                 queryset=organization_parameter)
+
+    if formset.is_valid():
+        parameter = formset.save()
+        for param in parameter:
+            p_list.parameters.add(param)
+            pass
 
     return render_to_response(template, {'request': request,
                                          'organization': organization,
                                          'parameter_list': organization_parameter,
                                          'formset': formset,
+                                         'list': p_list,
                                         }, context_instance=RequestContext(request))
 
 

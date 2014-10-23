@@ -51,11 +51,7 @@ all Tasks
     <td class="hidden-xs hidden-sm">
       <span title="{{ task.desc }}">
         <small>
-          {% if task.desc %}
-          {{ task.desc|truncatechars:75 }}
-          {% else %}
-          ---
-          {% endif %}
+          {{ task.desc|default:"---"|truncatechars:75 }}
         </small>
       </span>
     </td>

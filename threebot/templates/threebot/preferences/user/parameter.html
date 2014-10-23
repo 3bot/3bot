@@ -10,63 +10,36 @@ new User Parameter
 
 {% include "threebot/preferences/user/_tab_navigation.html" %}
 
-<h3>Create New Parameter</h3>
-
-  {% if form.non_field_errors %}
-  {% for error in form.non_field_errors %}
-  <p class="bg-danger">{{ error }}</p>
-  {% endfor %}
-  {% endif %}
-<form action="." method="post" class="form-horizontal" role="form">
+<form action="." method="post" accept-charset="utf-8">
+  {{ formset.management_form }}
   {% csrf_token %}
-  {% for field in form.visible_fields %}
-  <div class="form-group">
-    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-    <div class="col-sm-10">
-      {% if field.errors %}
-      {% for error in field.errors %}
-      <p class="text-danger">{{ error }}</p>
-      {% endfor %}
-      {% endif %}
-      {{ field }}
-      <p class="help-block">{{ field.help_text }}</p>
-    </div>
-  </div>
-  {% endfor %}
-  {% for hidden in form.hidden_fields %}
-  {{ hidden }}
-  {% endfor %}
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" class="btn btn-primary" name="_save" value="Save" />
-      <input type="submit" class="btn btn-default" name="_continue" value="Save and continue editing" />
-      <input type="submit" class="btn btn-default" name="_addanother" value="Save and add another" />
-    </div>
-  </div>
-</form>
-
-<h3>All Parameter</h3>
-
-{% if parameter_list %}
-<table class="table table-hover">
-  <thead>
-        <tr>
-            <th></th>
-            <th>Data Type</th>
-            <th>Value</th>            
-        </tr>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Data Type*</th>
+        <th>Name*</th>
+        <th>Value*</th>
+      </tr>
     </thead>
-  {% for parameter in parameter_list %}
-  <tr id="{{ parameter.id }}">
-    <td><a href="{{ parameter.get_absolute_url }}">{{ parameter.name }}</a></td>
-    <td>{{ parameter.data_type }}</td>
-    <td>{{ parameter.value }}</td>
-  </tr>
-  {% endfor %}
-</table>
-
-{% else %}
-<div class="alert alert-warning" role="alert"><strong>No Parameter!</strong> Go ahead and create some</div>
-{% endif %}
+    <tbody>
+    {% for form in formset %}
+      <tr>
+        <td>
+          {{ form.errors }}
+          {{ form.parameter_ptr }}
+          {{ form.owner }}
+          {{ form.data_type }}
+        </td>
+        <td>{{ form.name }}</td>
+        <td>{{ form.value }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p>
+    <input type="submit" class="btn btn-primary" name="save" value="Save" />
+    <button type="submit" class="btn btn-danger pull-right disabled" name="_delete" value="_delete"><span class="glyphicon glyphicon-trash"></span> Delete selected</button>
+  </p>
+</form>
 
 {% endblock %}

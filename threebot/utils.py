@@ -184,11 +184,20 @@ def create_workflow_with(task):
 
 
 def clone_task_for_team(user, task, team):
-    # TODO: check for readonly and built-in tasks --> user need admin permission
-    # TODO: check if user is member of both teams --> task.owner and team
-    cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
-    cloned_task.save()
-    return cloned_task
+    # check if user is member in both teams
+    if user in team.users.all() and user in task.owner.users.all():
+        if not task.is_builtin and not task.is_readonly:
+            cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
+            cloned_task.save()
+            return cloned_task
+        else:
+            # user need admin permission to clone this task
+            if has_admin_permission(user, task.owner):
+                cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
+                cloned_task.save()
+                return cloned_task
+
+    raise Exception("%s is not allowed to clone Task: %s (id: %i)" % (user.username, task, task.id))
 
 
 def render_templates(workflow_log, mask=False):

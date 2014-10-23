@@ -88,6 +88,7 @@ def run_workflow(workflow_log_id):
     conn.close()
 
     workflow_log.outputs = outputs
+    workflow_log.exit_code = workflow_log.SUCCESS
     workflow_log.save()
 
     # Notify user in case of failure

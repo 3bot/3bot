@@ -50,9 +50,9 @@ class OrganizationParameterCreateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        #org = kwargs.pop('org')
+        org = kwargs.pop('org')
         super(OrganizationParameterCreateForm, self).__init__(*args, **kwargs)
-        #self.fields['owner'].initial = org
+        self.fields['owner'].initial = org
 
 
 class OrganizationParameterChangeForm(OrganizationParameterCreateForm):
@@ -60,11 +60,52 @@ class OrganizationParameterChangeForm(OrganizationParameterCreateForm):
         exclude = ('owner',)
 
 
-OrganizationParameterFormSet = modelformset_factory(
-    OrganizationParameter,
-    form=OrganizationParameterChangeForm,
-    extra=3,
-    )
+def make_organization_parameter_formset(org, extra=3):
+    """
+    This is a workaround for passing custom parameters (the parameter owner in our case)
+    to a ModelFormset and is based on this stackoverflow answer:
+    http://stackoverflow.com/a/1376616
+    """
+    class _OrganizationParameterCreateForm(forms.ModelForm):
+        class Meta:
+            model = OrganizationParameter
+            fields = ['data_type', 'name', 'value', 'owner', ]
+            widgets = {
+                'data_type': forms.Select(attrs={'class': 'form-control', }),
+                'name': forms.TextInput(attrs={'class': 'form-control', }),
+                'value': forms.TextInput(attrs={'class': 'form-control', }),
+                'owner': forms.HiddenInput(),
+            }
+
+        def __init__(self, *args, **kwargs):
+            # self.org = org
+            super(_OrganizationParameterCreateForm, self).__init__(*args, **kwargs)
+            self.fields['owner'].initial = org
+    return modelformset_factory(OrganizationParameter, form=_OrganizationParameterCreateForm, extra=extra)
+
+
+def make_user_parameter_formset(user, extra=3):
+    """
+    This is a workaround for passing custom parameters (the parameter owner in our case)
+    to a ModelFormset and is based on this stackoverflow answer:
+    http://stackoverflow.com/a/1376616
+    """
+    class _UserParameterCreateForm(forms.ModelForm):
+        class Meta:
+            model = UserParameter
+            fields = ['data_type', 'name', 'value', 'owner', ]
+            widgets = {
+                'data_type': forms.Select(attrs={'class': 'form-control', }),
+                'name': forms.TextInput(attrs={'class': 'form-control', }),
+                'value': forms.TextInput(attrs={'class': 'form-control', }),
+                'owner': forms.HiddenInput(),
+            }
+
+        def __init__(self, *args, **kwargs):
+            # user = kwargs.pop('user')
+            super(_UserParameterCreateForm, self).__init__(*args, **kwargs)
+            self.fields['owner'].initial = user
+    return modelformset_factory(UserParameter, form=_UserParameterCreateForm, extra=extra)
 
 
 class ParameterListSelectForm(forms.Form):

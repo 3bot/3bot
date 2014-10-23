@@ -164,7 +164,9 @@ def delete(request, slug, template='threebot/task/delete.html'):
     :param template: A custom template.
     """
     orgs = get_my_orgs(request)
-    task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_readonly=False, is_builtin=False)
+    # TODO: this need more logic
+    # dont delete builtin and readonly tasks by not admin users ..
+    task = get_object_or_404(Task, owner__in=orgs, slug=slug)
 
     if request.method == 'POST':
         new_data = request.POST.copy()

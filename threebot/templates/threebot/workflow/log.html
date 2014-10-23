@@ -14,6 +14,8 @@ Logged {{ workflow }}
     <h2>
       {% if workflow_log.exit_code == workflow_log.ERROR %}
       <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>  
+      {% elif workflow_log.exit_code == workflow_log.PENDING %}
+      <span class="glyphicon glyphicon-refresh spin workflow-pending"></span>
       {% else %}
       <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
       {% endif %}
@@ -79,9 +81,12 @@ $(function() {
     $('.show-tooltip').tooltip({placement: 'bottom'});
 });
 
-setInterval(function() {
-      window.location.reload();
-    }, 10000);
+log_exit_code = '{{ workflow_log.exit_code|escapejs }}'
+if (log_exit_code == '2') {
+    setInterval(function() {
+          window.location.reload();
+        }, 5000);
+}
 </script>
 {% endaddtoblock "js" %}
 
