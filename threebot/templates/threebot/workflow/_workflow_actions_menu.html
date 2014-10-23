@@ -1,0 +1,7 @@
+{% load threebot_tags %}
+
+<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="task action menu">
+  <li><a href="{% url 'core_workflow_detail_edit' workflow.slug %}">Edit</a></li>
+  <li><a href="{% url 'core_wokflow_detail_reorder' workflow.slug %}">Reorder</a></li>
+  <li class="disabled" role="presentation" title="working hard on it"><a role="menuitem" tabindex="-1" href="#">Hooks</a></li>
+</ul>

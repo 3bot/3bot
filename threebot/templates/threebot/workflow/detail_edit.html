@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{% extends "threebot/workflow/detail_base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
 
-{% block doctitle %}
-new Workflow
-{% endblock %}
-
-{% block content %}
-<h2>Create new Workflow</h2>
+{% block inner_content %}
 <div class="row">
   <div class="col-lg-8">
     {% if form.non_field_errors %}
@@ -30,13 +28,17 @@ new Workflow
       </div>
       {% endfor %}
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-2 col-lg-10">
           <input type="submit" class="btn btn-primary" name="_save" value="Save" />
           <input type="submit" class="btn btn-default hidden-xs" name="_continue" value="Save and continue editing" />
           <input type="submit" class="btn btn-default hidden-xs" name="_addanother" value="Save and add another" />
+          <a href="#delete_modal" data-toggle="modal" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-trash"></span> Delete</a>
         </div>
       </div>
     </form>
   </div>
 </div>
+
+{% include 'threebot/workflow/_delete_modal.html' %}
+
 {% endblock %}

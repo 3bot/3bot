@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block doctitle %}
+Workflow - {{ workflow }}
+{% endblock %}
+
+{% block content %}
+<h2>
+  Workflow - {{ workflow }}<br>
+</h2>
+
+<div class="row">
+  <div class="col-lg-8">
+    <ul class="list-inline">
+      <li><strong>Team:</strong> {{ workflow.owner }}</li>
+      {% get_last_worker_for request workflow as worker %}
+      {% if worker %}
+      <li></li><strong>Last performed on:</strong> <a href="{{ worker.get_absolute_url }}">{{ worker }}</a></li></li>
+      {% endif %}
+      <li class="hidden-xs"><strong>Description:</strong> {{ workflow.desc|truncatechars:75 }}</li>
+    </ul>
+  </div>
+</div>
+
+<div class="row" style="padding-top:20px; padding-bottom:25px;">
+  <div class="col-lg-8">
+    <ul class="nav nav-tabs" role="tablist">
+      {% url 'core_workflow_detail' workflow.slug as core_workflow_detail_url %}
+      <li {% if request.path == core_workflow_detail_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_url }}">Perform</a></li>
+      
+      {% url 'core_workflow_detail_with_list' workflow.slug as core_workflow_detail_with_list_url %}
+      <li {% if request.path == core_workflow_detail_with_list_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_with_list_url }}">Perform with List</a></li>
+
+      {% url 'core_workflow_detail_digest' workflow.slug as core_workflow_detail_digest_url %}
+      <li {% if request.path == core_workflow_detail_digest_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_digest_url }}">Digest</a></li>
+
+      {% url 'core_workflow_detail_edit' workflow.slug as core_workflow_detail_edit_url %}
+      <li {% if request.path == core_workflow_detail_edit_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_edit_url }}">Edit</a></li>
+
+      {% url 'core_wokflow_detail_reorder' workflow.slug as core_wokflow_detail_reorder_url %}
+      <li {% if request.path == core_wokflow_detail_reorder_url %}class="active"{% endif %}><a href="{{ core_wokflow_detail_reorder_url }}">Reorder</a></li>
+
+      <li class="disabled"><a href="#" title="working hard on it">Hooks</a></li>
+
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></a>
+        {% include 'threebot/workflow/_workflow_actions_menu.html' %}
+     </li>
+    </ul>
+  </div>
+</div>
+
+{% block inner_content %}
+{% endblock %}
+
+{% endblock %}

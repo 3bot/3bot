@@ -1,0 +1,40 @@
+<div id="delete_modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Delete Task - {{ task }}</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the Task <strong>{{ task }}</strong></p>
+        
+        {% if affected_workflow_tasks %}
+        <div class="alert alert-danger" role="alert">
+          <strong>Oh snap!</strong> The following Workflows are affected if you delete this task
+          <ul>
+            {% for wf_task in affected_workflow_tasks %}
+            <li>
+              <a href="{{ wf_task.workflow.get_absolute_url }}"><strong>{{ wf_task.workflow }}</strong></a>
+            </li>
+            {% endfor %}
+          </ul>
+          Make sure youre know what you are doing.
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert"><strong>Well done!</strong> No workflows are affected if you delete this task.</div>
+        {% endif %}
+
+      </div>
+      <div class="modal-footer">
+        <form style="display: inline;" action="{% url 'core_task_delete' task.slug %}" method="post" accept-charset="utf-8">
+          {% csrf_token %}
+          <select style="display: none;" name="sure_delete" id="sure_delete" size="1" class="uniform">
+            <option value="Yes" selected="selected">Yes</option>
+          </select>
+          <input type="submit" class="btn btn-danger" value="Yes, delete this Task">
+        </form>
+        <button type="button" class="btn btn-default" data-dismiss="modal">No, don't delete</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

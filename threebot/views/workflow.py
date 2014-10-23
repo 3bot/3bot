@@ -1,6 +1,5 @@
 import json
 
-from django import forms
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -15,7 +14,7 @@ from ..models import OrganizationParameter, ParameterList
 from ..models import WorkflowLog
 from ..utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
 from ..forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
-from ..runflow import run_workflow
+from ..tasks import run_workflow
 
 
 @login_required
@@ -51,7 +50,19 @@ def create(request, template='threebot/workflow/create.html'):
 
 
 @login_required
-def edit(request, slug, template='threebot/workflow/edit.html'):
+def detail_digest(request, slug, template='threebot/workflow/detail_digest.html'):
+    orgs = get_my_orgs(request)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+    logs = filter_workflow_log_history(workflow=workflow, quantity=20)
+
+    return render_to_response(template, {'request': request,
+                                         'workflow': workflow,
+                                         'logs': logs,
+                                        }, context_instance=RequestContext(request))
+
+
+@login_required
+def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -77,7 +88,7 @@ def edit(request, slug, template='threebot/workflow/edit.html'):
 
 
 @login_required
-def detail(request, slug, template='threebot/workflow/detail.html'):
+def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -173,10 +184,10 @@ def detail(request, slug, template='threebot/workflow/detail.html'):
             wf_preset.save()
 
         worker = Worker.objects.get(id=worker_id)
-        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, performed_by=request.user, performed_on=worker)
+        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, outputs={}, performed_by=request.user, performed_on=worker)
         workflow_log.save()
 
-        ans = run_workflow(workflow_log, worker)
+        run_workflow(workflow_log.id)
 
         return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
@@ -193,7 +204,7 @@ def detail(request, slug, template='threebot/workflow/detail.html'):
 
 
 @login_required
-def detail_with_list(request, slug, template='threebot/workflow/detail_with_list.html'):
+def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf_with_list.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
@@ -226,7 +237,7 @@ def detail_with_list(request, slug, template='threebot/workflow/detail_with_list
 
             input_dict['%s' % wf_task.id] = l_input_dict
 
-        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, performed_by=request.user, performed_on=worker)
+        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, outputs={}, performed_by=request.user, performed_on=worker)
         workflow_log.save()
 
         wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
@@ -234,7 +245,7 @@ def detail_with_list(request, slug, template='threebot/workflow/detail_with_list
         wf_preset.defaults.update({'list_id': parameter_list.id})
         wf_preset.save()
 
-        ans = run_workflow(workflow_log, worker)
+        run_workflow(workflow_log.id)
 
         return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
@@ -258,18 +269,18 @@ def delete(request, slug, template='threebot/workflow/delete.html'):
 
     if request.method == 'POST':
         new_data = request.POST.copy()
-        if new_data['delete_workflow'] == 'Yes':
+        if new_data['sure_delete'] == 'Yes':
             workflow.delete()
             return redirect('core_workflow_list')
         else:
-            return redirect('core_workflow_edit', slug=workflow.slug)
+            return redirect('core_workflow_detail_edit', slug=workflow.slug)
 
     return render_to_response(template, {'workflow': workflow,
                                         }, context_instance=RequestContext(request))
 
 
 @login_required
-def reorder(request, slug, template='threebot/workflow/reorder.html'):
+def detail_reorder(request, slug, template='threebot/workflow/detail_reorder.html'):
     workflow = Workflow.objects.get(slug=slug)
     tasks = Task.objects.filter(owner=workflow.owner)
     workflow_tasks = order_workflow_tasks(workflow)
@@ -332,8 +343,8 @@ def replay(request, slug, id):
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
 
     old_log = get_object_or_404(WorkflowLog, id=id)
-    new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, performed_by=request.user, performed_on=old_log.performed_on)
+    new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, outputs={}, performed_by=request.user, performed_on=old_log.performed_on)
     new_log.save()
 
-    ans = run_workflow(new_log, old_log.performed_on)
+    run_workflow(new_log.id)
     return redirect('core_wokflow_log_detail', slug=slug, id=new_log.id)
