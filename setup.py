@@ -15,7 +15,7 @@ setup(
     install_requires=[
         "jsonfield",
         "django-sekizai",
-        "django-background-task"
+        "django-background-task",
         "pyzmq",
         "threebot_crypto",
     ],
