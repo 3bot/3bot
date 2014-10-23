@@ -99,7 +99,7 @@ def run_workflow(workflow_log_id):
     # return True
 
 
-def send_script(request, conn, REQUEST_TIMEOUT=15000, REQUEST_RETRIES=1):
+def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
     request = threebot_crypto.encrypt(request, secret_key=conn.secret_key)
     retries_left = REQUEST_RETRIES
     response = {}
