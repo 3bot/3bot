@@ -10,6 +10,9 @@ tasks but also allows you to re-use your shell scripts in a fast and efficient w
 [QUICKSTART](https://github.com/3bot/3bot/blob/master/QUICKSTART.md)
 
 
+## Changelog
+
+see [CHANGELOG.md](https://github.com/3bot/3bot/blob/master/CHANGELOG.md)
 
 ### Keywords
 
