@@ -1,44 +1,12 @@
-{% extends "base.html" %}
+{% extends "threebot/workflow/detail_base.html" %}
+{% load staticfiles %}
 {% load sekizai_tags %}
 {% load threebot_tags %}
 
-{% block doctitle %}
-Workflow: {{ workflow }}
-{% endblock %}
-
-
-{% block content %}
-<h2>
-  Workflow - {{ workflow }}
-  <span class="pull-right">
-    <a href="{% url 'core_wokflow_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-sm hidden-xs hidden-sm">Change Task order</a>
-    <a href="{% url 'core_workflow_edit' workflow.slug %}" type="button" class="btn btn-primary btn-sm">Edit Workflow</a>
-  </span>
-</h2>
-<div class="row">
-  <div class="col-sm-12">
-    <ul class="list-inline">
-      <li></li><strong>Team:</strong> {{ workflow.owner }}</li>
-      {% get_last_worker_for request workflow as worker %}
-      {% if worker %}
-      <li></li><strong>Last performed on:</strong> <a href="{{ worker.get_absolute_url }}">{{ worker }}</a></li></li>
-      {% endif %}
-    </ul>
-    <p>
-      <small>{{ workflow.desc|urlize|linebreaks }}</small>
-    </p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-sm-12">
-    <a href="{% url "core_workflow_detail" workflow.slug %}" type="button" class="btn btn-primary btn-xs">Back to usual</a>
-  </div>
-</div>
-
+{% block inner_content %}
 <div class="row">
   {% if workflow_tasks %}
-  <div class="col-sm-6">
+  <div class="col-lg-6">
   <form method="post" action="." id="workflow_form" class="form-horizontal" role="form">
     {% csrf_token %}
   <h3>Worker</h3>
@@ -57,24 +25,6 @@ Workflow: {{ workflow }}
     {{ field }}      
     {% endfor %}
 
-  <h3>Parameter List</h3>
-    {% if list_form.non_field_errors %}
-    {% for error in list_form.non_field_errors %}
-    <p class="bg-danger">{{ error }}</p>
-    {% endfor %}
-    {% endif %}
-
-    {% for field in list_form %}
-      {% if field.errors %}
-      {% for error in field.errors %}
-      <p class="text-danger">{{ error }}</p>
-      {% endfor %}
-      {% endif %}
-    {{ field }}      
-    {% endfor %}
-
-    <input type="submit" id="perform_workflow" class="btn btn-success btn-lg btn-block" value="Perform" style="margin-top: 20px;">
-  </form>
   <h3>Tasks</h3>
   {% for wt in workflow_tasks %}
     <div class="panel panel-default">
@@ -89,10 +39,38 @@ Workflow: {{ workflow }}
           </small>
         </h3>
       </div>
+      <div class="panel-body">
+        {% if wt.form %}
+            {% for field in wt.form.visible_fields %}
+            <div class="form-group">
+              <label for="{{ field.id_for_label }}" class="col-sm-3 control-label">{{ field.label }}</label>
+              <div class="col-sm-8">
+                {{ field }}
+              </div>
+              <div class="col-sm-1 control-label">
+                <a data-toggle="modal" data-target="#newParameterModal">
+                  <span title="Create new User Parameter." class="show-tooltip glyphicon glyphicon-plus-sign"></span>
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+        {% else %}
+          <p><strong>No Inputs required</strong></p>
+        {% endif %}
+        {% if wt.task.is_readonly or wt.task.is_builtin %}
+        {% else %}
+        <textarea class="form-control" rows="3" readonly>{{ wt.task.template }}</textarea>
+        {% endif %}
+      </div>
     </div>
+    {% for field in wt.form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
   {% endfor %}
+    <input type="submit" id="perform_workflow" class="btn btn-success btn-lg btn-block" value="Perform" style="margin-bottom: 20px;">
+  </form>
   </div>
-  <div class="col-sm-6">
+  <div class="col-lg-6">
     <h3>Log History</h3>
     {% if logs %}
     {% for log in logs %}
@@ -106,10 +84,10 @@ Workflow: {{ workflow }}
     </p>
     {% endfor %}
     <p>
-      <small><a href="#">View all</a></small>
+      <small><a href="{% url 'core_workflow_detail_digest' workflow.slug %}">View all</a></small>
     </p>
     {% else %}{# no logs #}
-    <div class="alert alert-warning" role="alert">Workflow not logged jet.</div>
+    <div class="alert alert-warning" role="alert">Sorry, No Logs found.</div>
     {% endif %}
 
   </div>

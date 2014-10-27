@@ -1,0 +1,39 @@
+{% load threebot_tags %}
+
+<ul class="dropdown-menu pull-right" role="menu" aria-labelledby="task action menu">
+  <li role="presentation" title="Create a new Workflow including this Task."><a role="menuitem" tabindex="-1" href="{% url 'core_task_create_workflow' task.slug %}">New Workflow</a></li>
+
+  {% if task.is_builtin or task.is_readonly %}
+    {% if task.owner|can_be_administarated_by:request.user %}
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_export' task.slug %}"><span class="glyphicon glyphicon-export"></span> Export Task</a></li>
+      
+      <li role="presentation" class="divider"></li>
+      <li role="presentation" class="dropdown-header">Copy Task</li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_clone' task.slug task.owner.slug %}"><span class="glyphicon glyphicon-transfer"></span> Copy for {{ task.owner }}</a></li>
+      
+      {% my_teams request task.owner.slug as teams %}
+      {% if teams %}
+      <li role="presentation" class="divider"></li>
+      <li role="presentation" class="dropdown-header">Clone Task</li>
+      {% for team in teams %}
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_clone' task.slug team.slug %}"><span class="glyphicon glyphicon-transfer"></span> Clone for {{ team }}</a></li>
+      {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% else %}
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_export' task.slug %}"><span class="glyphicon glyphicon-export"></span> Export Task</a></li>
+      
+      <li role="presentation" class="divider"></li>
+      <li role="presentation" class="dropdown-header">Copy Task</li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_clone' task.slug task.owner.slug %}"><span class="glyphicon glyphicon-transfer"></span> Copy for {{ task.owner }}</a></li>
+      
+      {% my_teams request task.owner.slug as teams %}
+      {% if teams %}
+      <li role="presentation" class="divider"></li>
+      <li role="presentation" class="dropdown-header">Clone Task</li>
+      {% for team in teams %}
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_clone' task.slug team.slug %}"><span class="glyphicon glyphicon-transfer"></span> Clone for {{ team }}</a></li>
+      {% endfor %}
+      {% endif %}
+  {% endif %}
+</ul>

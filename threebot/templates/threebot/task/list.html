@@ -26,77 +26,61 @@ all Tasks
 
 <table class="table table-hover">
 	<thead>
-      	<tr>
-            <th></th>
-            <th class="hidden-xs hidden-sm">Description</th>
-            <th class="hidden-xs">Type</th>            
-            <th>Readonly</th>
-            <th>Built-In</th>
-            <th>Team</th>
-            <th></th>
-      	</tr>
+  	<tr>
+      <th></th>
+      <th class="hidden-xs hidden-sm">Description</th>
+      <th class="hidden-xs">Type</th>            
+      <th>Readonly</th>
+      <th>Built-In</th>
+      <th>Team</th>
+      <th></th>
+  	</tr>
     </thead>
     <tbody class="searchable">
 	{% for task in tasks %}
 	<tr id="{{ task.id }}">
 		<td>
-            {% if not task.is_builtin and not task.is_readonly %}
-                <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
-            {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
-                <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
-            {% else %}
-                {{ task.title }}
-            {%endif%}
-        </td>
-        <td class="hidden-xs hidden-sm">
-            <span title="{{ task.desc }}">
-                <small>
-                    {% if task.desc %}
-                    {{ task.desc|urlize|truncatechars:100 }}
-                    {% else %}
-                    -
-                    {% endif %}
-                </small>
-            </span>
-        </td>
- 
-        <td class="hidden-xs"><small>{{ task.type }}</small></td>
-		<td>
-            {% if task.is_readonly %}
-            <span class="glyphicon glyphicon-ok-sign"></span>
-            {% else %}
-            <span class="glyphicon glyphicon-minus-sign"></span>
-            {% endif %}
-        </td>
-		<td>
-            {% if task.is_builtin %}
-            <span class="glyphicon glyphicon-ok-sign"></span>
-            {% else %}
-            <span class="glyphicon glyphicon-minus-sign"></span>
-            {% endif %}
-        </td>
-        <td>{{ task.owner }}</td>
-        <td>
-            <div class="dropdown">
-              <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                <span class="glyphicon glyphicon-cog"></span> 
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                <li role="presentation" title="Create a new Workflow including this Task."><a role="menuitem" tabindex="-1" href="{% url 'core_task_create_workflow' task.slug %}">New Workflow</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_export' task.slug %}"><span class="glyphicon glyphicon-export"></span> Export Task</a></li>
-                {% my_teams request task.owner.slug as teams %}
-                {% if teams %}
-                <li role="presentation" class="divider"></li>
-                <li role="presentation" class="dropdown-header">Clone Task</li>
-                {% for team in teams %}
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'core_task_clone' task.slug team.slug %}"><span class="glyphicon glyphicon-transfer"></span> Clone for {{ team }}</a></li>
-                {% endfor %}
-                {% endif %}
-              </ul>
-            </div>
-        </td>
-	</tr>
+      {% if not task.is_builtin and not task.is_readonly %}
+        <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
+      {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
+        <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
+      {% else %}
+        {{ task.title }}
+      {%endif%}
+    </td>
+    <td class="hidden-xs hidden-sm">
+      <span title="{{ task.desc }}">
+        <small>
+          {{ task.desc|default:"---"|truncatechars:75 }}
+        </small>
+      </span>
+    </td>
+    <td class="hidden-xs"><small><span class="label label-default">{{ task.type }}</span></small></td>
+	  <td>
+      {% if task.is_readonly %}
+      <span class="glyphicon glyphicon-ok-sign"></span>
+      {% else %}
+      <span class="glyphicon glyphicon-minus-sign"></span>
+      {% endif %}
+    </td>
+	  <td>
+      {% if task.is_builtin %}
+      <span class="glyphicon glyphicon-ok-sign"></span>
+      {% else %}
+      <span class="glyphicon glyphicon-minus-sign"></span>
+      {% endif %}
+      </td>
+    <td>{{ task.owner }}</td>
+      <td>
+        <div class="dropdown">
+          <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-cog"></span> 
+            <span class="caret"></span>
+          </button>
+            {% include 'threebot/task/_task_actions_menu.html' %}
+        </div>
+      </td>
+	  </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -108,8 +92,6 @@ all Tasks
 
 {% addtoblock "js" %}
 <script type="text/javascript">
-$('#nav_tasks').addClass('active');   
-
 $(document).ready(function () {
     (function ($) {
         $('#filter').keyup(function () {

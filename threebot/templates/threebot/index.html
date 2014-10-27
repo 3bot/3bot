@@ -10,6 +10,22 @@ Configure, Build and Perform
   <p>Configure, Build and Perform</p>
 </blockquote>
 <div class="row">
+    {% if my_logs %}
+    <div class="col-sm-6">
+        <h3>My Log History</h3>
+        {% for log in my_logs %}
+        <p>
+            {% if log.exit_code == log.ERROR %}
+            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
+            {% else %}
+            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
+            {% endif %}
+            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     {% if team_logs %}
     <div class="col-sm-6">
         <h3>Team Log History</h3>
@@ -26,30 +42,16 @@ Configure, Build and Perform
     </div>
     {% endif %}
     
+
+</div>
+
+<div class="row">
     {% if counts %}
     <div class="col-sm-6">
         <h3>Most performed Workflows</h3>
         {% for wf in counts %}
         <p>
             <span class="label label-info">{{ wf.issue_count }}x</span> <a href="{{ wf.get_absolute_url }}">{{ wf.title }}</a>
-        </p>
-        {% endfor %}
-    </div>
-    {% endif %}
-</div>
-
-<div class="row">
-    {% if my_logs %}
-    <div class="col-sm-6">
-        <h3>My Log History</h3>
-        {% for log in my_logs %}
-        <p>
-            {% if log.exit_code == log.ERROR %}
-            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
-            {% else %}
-            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
-            {% endif %}
-            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
         </p>
         {% endfor %}
     </div>
