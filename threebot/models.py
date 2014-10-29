@@ -380,7 +380,7 @@ class WorkflowLog(models.Model):
             'id': self.id})
 
     def __unicode__(self):
-        return "%s logged on %s" % (self.workflow.title, str(self.date_created))
+        return "[%s] %s logged %s"[:50] % (self.date_created.strftime('%d.%m.%y'), str(self.performed_by), self.workflow.title, )
 
 
 class Parameter(models.Model):

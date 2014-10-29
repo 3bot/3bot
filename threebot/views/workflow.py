@@ -42,7 +42,7 @@ def create(request, template='threebot/workflow/create.html'):
             return redirect('core_workflow_create')
         else:  # _save
             # redirect to reorder view
-            return redirect('core_wokflow_reorder', slug=workflow.slug)
+            return redirect('core_wokflow_detail_reorder', slug=workflow.slug)
 
     return render_to_response(template, {'request': request,
                                          'form': form,

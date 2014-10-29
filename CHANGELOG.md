@@ -1,6 +1,17 @@
 # Changelog
 
-### 0.0.12
+
+### 0.0.15
+
+#### 29.10.2014
+
+*    CSS indicators for pending workflows
+*    Fix for wrong redirect after creating a new Workflow
+
+
+### 0.0.14
+
+#### 23.10.2014
 
 *    3bot now depends on [django-background-task](https://github.com/lilspikey/django-background-task) for asynchronous workflow performance. Visit the Repository to see how to set up django-background-task.
 *    The Timeout to perform a Task on a worker was increased to 3 minutes.
