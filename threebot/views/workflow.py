@@ -73,7 +73,7 @@ def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
 
         if '_continue' in form.data:
             # rerirect back to detailview
-            return redirect('core_wokflow_reorder', slug=workflow.slug)
+            return redirect('core_wokflow_detail_reorder', slug=workflow.slug)
         elif '_addanother' in form.data:
             # redirect to create page
             return redirect('core_workflow_create')
