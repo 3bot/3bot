@@ -528,5 +528,5 @@ class ParameterList(models.Model):
         verbose_name_plural = _("Parameter Lists")
         
     def __str__(self):
-        return self.name
+        return self.title
 
