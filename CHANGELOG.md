@@ -1,6 +1,10 @@
 # Changelog
 
 
+### Latest
+
+* Added @python_2_unicode_compatible for Python 2 - Python 3 compatibility
+
 ### 0.0.15
 
 #### 29.10.2014
