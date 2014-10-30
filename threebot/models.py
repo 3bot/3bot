@@ -385,7 +385,7 @@ class WorkflowLog(models.Model):
             'id': self.id})
 
     def __str__(self):
-        return "[%s] %s logged %s" % (self.date_created.strftime('%d.%m.%y %M:%H'), str(self.performed_by), self.workflow.title, )
+        return "%s - %s logged %s" % (self.date_created.strftime('%d.%m.%y %M:%H'), str(self.performed_by), self.workflow.title, )
 
 
 class Parameter(models.Model):
