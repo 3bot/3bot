@@ -80,7 +80,7 @@
   {% else %}
   <div class="col-sm-6">
     <div class="alert alert-warning" role="alert"><strong>No Tasks</strong> in this Workflow.</div>
-    <a href="{% url 'core_wokflow_detail_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-lg">Add Tasks</a>
+    <a href="{% url 'core_workflow_detail_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-lg">Add Tasks</a>
   </div>
 {% endif %}
 

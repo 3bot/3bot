@@ -380,7 +380,7 @@ class WorkflowLog(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('core_wokflow_log_detail', (), {
+        return ('core_workflow_log_detail', (), {
             'slug': self.workflow.slug,
             'id': self.id})
 

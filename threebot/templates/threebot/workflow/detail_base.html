@@ -40,8 +40,8 @@ Workflow - {{ workflow }}
       {% url 'core_workflow_detail_edit' workflow.slug as core_workflow_detail_edit_url %}
       <li {% if request.path == core_workflow_detail_edit_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_edit_url }}">Edit</a></li>
 
-      {% url 'core_wokflow_detail_reorder' workflow.slug as core_wokflow_detail_reorder_url %}
-      <li {% if request.path == core_wokflow_detail_reorder_url %}class="active"{% endif %}><a href="{{ core_wokflow_detail_reorder_url }}">Reorder</a></li>
+      {% url 'core_workflow_detail_reorder' workflow.slug as core_workflow_detail_reorder_url %}
+      <li {% if request.path == core_workflow_detail_reorder_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_reorder_url }}">Reorder</a></li>
 
       <li class="disabled"><a href="#" title="working hard on it">Hooks</a></li>
 
