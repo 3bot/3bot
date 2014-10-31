@@ -43,7 +43,12 @@ Workflow - {{ workflow }}
       {% url 'core_workflow_detail_reorder' workflow.slug as core_workflow_detail_reorder_url %}
       <li {% if request.path == core_workflow_detail_reorder_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_reorder_url }}">Reorder</a></li>
 
-      <li class="disabled"><a href="#" title="working hard on it">Hooks</a></li>
+      {% url 'hook_list' workflow.slug as hooks_url %}
+      {% if hooks_url %}
+      <li {% if request.path == hooks_url %}class="active"{% endif %}><a href="{{ hooks_url }}">Hooks</a></li>
+      {% else %}
+      <li class="disabled"><a href="#" title="Seems like the threebot_hook package is not installed.">Hooks</a></li>
+      {% endif %}
 
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></a>
