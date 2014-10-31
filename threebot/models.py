@@ -380,14 +380,14 @@ class WorkflowLog(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('core_wokflow_log_detail', (), {
+        return ('core_workflow_log_detail', (), {
             'slug': self.workflow.slug,
             'id': self.id})
 
     def __str__(self):
-        return "[%s] %s logged %s"[:50] % (self.date_created.strftime('%d.%m.%y'), str(self.performed_by), self.workflow.title, )
+        return "%s - %s logged %s" % (self.date_created.strftime('%d.%m.%y %M:%H'), str(self.performed_by), self.workflow.title, )
 
- 
+
 class Parameter(models.Model):
     STRING = 'string'
     EMAIL = 'email'

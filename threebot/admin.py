@@ -14,6 +14,9 @@ from .models import ParameterList
 class WorkerAdmin(admin.ModelAdmin):
     model = Worker
     readonly_fields = ('slug', 'is_accessible', )
+    list_display = ('title', 'slug', 'owner', 'ip', 'port', 'muted', 'is_accessible', )
+    list_filter = ('muted', 'owner__name', )
+    search_fields = ['owner__name', 'title', 'slug', ]
 
 
 class WorkflowPresetAdmin(admin.ModelAdmin):
@@ -23,22 +26,31 @@ class WorkflowPresetAdmin(admin.ModelAdmin):
 
 class TaskAdmin(admin.ModelAdmin):
     model = Task
-    readonly_fields = ('slug', 'required_inputs', 'inputs_fingerprint', 'version', )
+    readonly_fields = ('slug', 'required_inputs', 'inputs_fingerprint', 'version', 'unique_identifier', )
+    list_display = ('title', 'slug', 'owner', 'is_readonly', 'is_builtin', )
+    list_filter = ('is_readonly', 'is_builtin', 'owner__name', )
+    search_fields = ['owner__name', 'title', 'slug', 'unique_identifier', ]
 
 
 class WorkflowAdmin(admin.ModelAdmin):
     model = Workflow
     readonly_fields = ('slug', )
+    list_display = ('title', 'slug', 'owner', )
+    list_filter = ('owner__name', )
+    search_fields = ['owner__name', 'title', 'slug', ]
 
 
 class WorkflowLogAdmin(admin.ModelAdmin):
     model = WorkflowLog
     list_display = ('workflow', 'date_created', 'exit_code', 'performed_by', )
     list_filter = ('exit_code',)
+    search_fields = ['workflow__title', ]
 
 
 class WorkflowTaskAdmin(admin.ModelAdmin):
     model = WorkflowTask
+    list_display = ('task', 'prev_workflow_task', 'next_workflow_task', )
+    search_fields = ['task__title', ]
 
 
 class UserParameterAdmin(admin.ModelAdmin):
@@ -48,7 +60,7 @@ class UserParameterAdmin(admin.ModelAdmin):
 
 
 class OrganizationParameterAdmin(UserParameterAdmin):
-    "We just inherit from UserParameterAdmin, sinze we use the same base Model"
+    "Since we use the same base Model, we just inherit from UserParameterAdmin"
     pass
 
 
