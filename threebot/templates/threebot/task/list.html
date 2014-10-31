@@ -37,51 +37,51 @@ all Tasks
   	</tr>
     </thead>
     <tbody class="searchable">
-	{% for task in tasks %}
-	<tr id="{{ task.id }}">
-		<td>
-      {% if not task.is_builtin and not task.is_readonly %}
-        <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
-      {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
-        <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
-      {% else %}
-        {{ task.title }}
-      {%endif%}
-    </td>
-    <td class="hidden-xs hidden-sm">
-      <span title="{{ task.desc }}">
-        <small>
-          {{ task.desc|default:"---"|truncatechars:75 }}
-        </small>
-      </span>
-    </td>
-    <td class="hidden-xs"><small><span class="label label-default">{{ task.type }}</span></small></td>
-	  <td>
-      {% if task.is_readonly %}
-      <span class="glyphicon glyphicon-ok-sign"></span>
-      {% else %}
-      <span class="glyphicon glyphicon-minus-sign"></span>
-      {% endif %}
-    </td>
-	  <td>
-      {% if task.is_builtin %}
-      <span class="glyphicon glyphicon-ok-sign"></span>
-      {% else %}
-      <span class="glyphicon glyphicon-minus-sign"></span>
-      {% endif %}
-      </td>
-    <td>{{ task.owner }}</td>
-      <td>
-        <div class="dropdown">
-          <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-            <span class="glyphicon glyphicon-cog"></span> 
-            <span class="caret"></span>
-          </button>
+    	{% for task in tasks %}
+    	<tr id="{{ task.id }}">
+    		<td>
+          {% if not task.is_builtin and not task.is_readonly %}
+            <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
+          {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
+            <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
+          {% else %}
+            {{ task.title }}
+          {%endif%}
+        </td>
+        <td class="hidden-xs hidden-sm">
+          <span title="{{ task.desc }}">
+            <small>
+              {{ task.desc|default:"---"|truncatechars:75 }}
+            </small>
+          </span>
+        </td>
+        <td class="hidden-xs"><small><span class="label label-default">{{ task.type }}</span></small></td>
+    	  <td>
+          {% if task.is_readonly %}
+          <span class="glyphicon glyphicon-ok-sign"></span>
+          {% else %}
+          <span class="glyphicon glyphicon-minus-sign"></span>
+          {% endif %}
+        </td>
+    	  <td>
+          {% if task.is_builtin %}
+          <span class="glyphicon glyphicon-ok-sign"></span>
+          {% else %}
+          <span class="glyphicon glyphicon-minus-sign"></span>
+          {% endif %}
+          </td>
+        <td>{{ task.owner }}</td>
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-cog"></span> 
+              <span class="caret"></span>
+            </button>
             {% include 'threebot/task/_task_actions_menu.html' %}
-        </div>
-      </td>
-	  </tr>
-    {% endfor %}
+          </div>
+        </td>
+    	</tr>
+      {% endfor %}
     </tbody>
 </table>
 
