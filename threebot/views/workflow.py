@@ -36,13 +36,13 @@ def create(request, template='threebot/workflow/create.html'):
 
         if '_continue' in form.data:
             # rerirect to detailview
-            return redirect('core_wokflow_detail', slug=workflow.slug)
+            return redirect('core_workflow_detail', slug=workflow.slug)
         elif '_addanother' in form.data:
             # redirect to create page
             return redirect('core_workflow_create')
         else:  # _save
             # redirect to reorder view
-            return redirect('core_wokflow_detail_reorder', slug=workflow.slug)
+            return redirect('core_workflow_detail_reorder', slug=workflow.slug)
 
     return render_to_response(template, {'request': request,
                                          'form': form,
@@ -73,7 +73,7 @@ def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
 
         if '_continue' in form.data:
             # rerirect back to detailview
-            return redirect('core_wokflow_reorder', slug=workflow.slug)
+            return redirect('core_workflow_detail_reorder', slug=workflow.slug)
         elif '_addanother' in form.data:
             # redirect to create page
             return redirect('core_workflow_create')
@@ -189,7 +189,7 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
 
         run_workflow(workflow_log.id)
 
-        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
     # else:
     #     raise("error")
@@ -247,7 +247,7 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
 
         run_workflow(workflow_log.id)
 
-        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
     logs = filter_workflow_log_history(workflow=workflow, quantity=5)
 
@@ -347,4 +347,4 @@ def replay(request, slug, id):
     new_log.save()
 
     run_workflow(new_log.id)
-    return redirect('core_wokflow_log_detail', slug=slug, id=new_log.id)
+    return redirect('core_workflow_log_detail', slug=slug, id=new_log.id)
