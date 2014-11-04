@@ -1,4 +1,9 @@
 from django import template
+from django.template.defaultfilters import stringfilter
+
+from urllib import quote_plus
+
+
 from threebot import __version__
 from ..utils import get_my_orgs, get_preset_worker, has_admin_permission
 from ..models import WorkflowPreset
@@ -46,3 +51,8 @@ def get_presets_for(request, workflow):
 @register.assignment_tag
 def get_threebot_version():
     return __version__
+
+
+@stringfilter
+def quote_plus(value):
+    return quote_plus(value)

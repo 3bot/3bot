@@ -1,8 +1,10 @@
 import json
+from urllib import unquote_plus
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.http import HttpResponse
 
 from ..models import Task
 from ..models import Worker
@@ -321,7 +323,6 @@ def detail_reorder(request, slug, template='threebot/workflow/detail_reorder.htm
 @login_required
 def log_detail(request, slug, id, template='threebot/workflow/log.html'):
     orgs = get_my_orgs(request)
-
     workflow_log = get_object_or_404(WorkflowLog, id=id)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
     try:
@@ -336,6 +337,20 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
                                          'templates': templates,
                                         }, context_instance=RequestContext(request))
 
+
+@login_required
+def log_detail_output(request, slug, id, output_slug):
+    orgs = get_my_orgs(request)
+    workflow_log = get_object_or_404(WorkflowLog, id=id)
+    workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
+    lookup_key = unquote_plus(output_slug)
+    output = workflow_log.outputs[lookup_key]
+    
+    format = request.GET.get("format", 'raw')
+    if format == 'raw':
+        return HttpResponse(content=output, content_type="text/plain", status=201)
+        
+        
 
 @login_required
 def replay(request, slug, id):

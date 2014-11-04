@@ -23,6 +23,9 @@ urlpatterns = patterns('threebot.views',
 
     url(r'^workflow/add/$', view='workflow.create', name='core_workflow_create'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/$', view='workflow.log_detail', name='core_wokflow_log_detail'),
+    url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/(?P<output_slug>[-\w]+)/$', 
+            view='workflow.log_detail_output', 
+            name='core_wokflow_log_detail_output'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/replay/$', view='workflow.replay', name='core_wokflow_replay'),
 
     url(r'^workflow/(?P<slug>[-\w]+)/delete/$', view='workflow.delete', name='core_workflow_delete'),
