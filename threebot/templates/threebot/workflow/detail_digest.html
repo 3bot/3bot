@@ -19,11 +19,7 @@
     {% if logs %}
     {% for log in logs %}
     <p>
-      {% if log.exit_code == log.ERROR %}
-      <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
-      {% else %}
-      <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
-      {% endif %}
+      <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
       <a href="{{ log.get_absolute_url }}">{{ log }}</a>
     </p>
     {% endfor %}

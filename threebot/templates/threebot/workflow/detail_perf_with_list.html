@@ -65,11 +65,7 @@
     {% if logs %}
     {% for log in logs %}
     <p>
-      {% if log.exit_code == log.ERROR %}
-      <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
-      {% else %}
-      <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
-      {% endif %}
+      <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
       <a href="{{ log.get_absolute_url }}">{{ log }}</a>
     </p>
     {% endfor %}
@@ -84,7 +80,7 @@
   {% else %}
   <div class="col-sm-6">
     <div class="alert alert-warning" role="alert"><strong>No Tasks</strong> in this Workflow.</div>
-    <a href="{% url 'core_wokflow_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-lg">Add Tasks</a>
+    <a href="{% url 'core_workflow_detail_reorder' workflow.slug %}" type="button" class="btn btn-primary btn-lg">Add Tasks</a>
   </div>
 {% endif %}
 

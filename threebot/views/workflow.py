@@ -38,13 +38,13 @@ def create(request, template='threebot/workflow/create.html'):
 
         if '_continue' in form.data:
             # rerirect to detailview
-            return redirect('core_wokflow_detail', slug=workflow.slug)
+            return redirect('core_workflow_detail', slug=workflow.slug)
         elif '_addanother' in form.data:
             # redirect to create page
             return redirect('core_workflow_create')
         else:  # _save
             # redirect to reorder view
-            return redirect('core_wokflow_reorder', slug=workflow.slug)
+            return redirect('core_workflow_detail_reorder', slug=workflow.slug)
 
     return render_to_response(template, {'request': request,
                                          'form': form,
@@ -75,7 +75,7 @@ def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
 
         if '_continue' in form.data:
             # rerirect back to detailview
-            return redirect('core_wokflow_reorder', slug=workflow.slug)
+            return redirect('core_workflow_detail_reorder', slug=workflow.slug)
         elif '_addanother' in form.data:
             # redirect to create page
             return redirect('core_workflow_create')
@@ -191,7 +191,7 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
 
         run_workflow(workflow_log.id)
 
-        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
     # else:
     #     raise("error")
@@ -249,7 +249,7 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
 
         run_workflow(workflow_log.id)
 
-        return redirect('core_wokflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
     logs = filter_workflow_log_history(workflow=workflow, quantity=5)
 
@@ -339,16 +339,18 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
 
 
 @login_required
-def log_detail_output(request, slug, id, output_slug):
+def log_detail_output(request, slug, id, outputslug):
     orgs = get_my_orgs(request)
     workflow_log = get_object_or_404(WorkflowLog, id=id)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
-    lookup_key = unquote_plus(output_slug)
-    output = workflow_log.outputs[lookup_key]
+    lookup_key = unquote_plus(outputslug)
+    output_item = workflow_log.outputs[lookup_key]
     
     format = request.GET.get("format", 'raw')
     if format == 'raw':
-        return HttpResponse(content=output, content_type="text/plain", status=201)
+        return HttpResponse(output_item['output'], content_type="text/plain")
+    elif format == 'html':
+        return HttpResponse(output_item['output'], content_type="text/html")
         
         
 
@@ -362,4 +364,4 @@ def replay(request, slug, id):
     new_log.save()
 
     run_workflow(new_log.id)
-    return redirect('core_wokflow_log_detail', slug=slug, id=new_log.id)
+    return redirect('core_workflow_log_detail', slug=slug, id=new_log.id)

@@ -1,6 +1,4 @@
-from django import template
-from django.template.defaultfilters import stringfilter
-
+from django import template 
 from urllib import quote_plus
 
 
@@ -53,6 +51,6 @@ def get_threebot_version():
     return __version__
 
 
-@stringfilter
-def quote_plus(value):
+@register.filter
+def quoteplus(value):
     return quote_plus(value)

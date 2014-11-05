@@ -15,11 +15,7 @@ Configure, Build and Perform
         <h3>My Log History</h3>
         {% for log in my_logs %}
         <p>
-            {% if log.exit_code == log.ERROR %}
-            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
-            {% else %}
-            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
-            {% endif %}
+            <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
             <a href="{{ log.get_absolute_url }}">{{ log }}</a>
         </p>
         {% endfor %}
@@ -31,12 +27,8 @@ Configure, Build and Perform
         <h3>Team Log History</h3>
     	{% for log in team_logs %}
         <p>
-            {% if log.exit_code == log.ERROR %}
-            <span class="glyphicon glyphicon-circle-arrow-down workflow-error"></span>
-            {% else %}
-            <span class="glyphicon glyphicon-circle-arrow-up workflow-success"></span>
-            {% endif %}
-    		<a href="{{ log.get_absolute_url }}">{{ log }}</a>
+            <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
+            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
     	</p>
     	{% endfor %}
     </div>
