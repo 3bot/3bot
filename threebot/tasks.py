@@ -4,12 +4,20 @@ from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from .utils import render_template, order_workflow_tasks, importCode
 from .botconnection import BotConnection
+from .models import WorkflowLog
 import threebot_crypto
+from background_task import background
+
+import logging
+
+logger = logging.getLogger('3bot')
+
 
 FLAGS = 0
 
 
-def run_workflow(workflow_log, worker):
+@background(schedule=1)
+def run_workflow(workflow_log_id):
     """
     expects an empty workflow_log,
     performes its tasks on the given worker(s) and
@@ -18,13 +26,16 @@ def run_workflow(workflow_log, worker):
     outputs = {}
     protocol = "tcp"
 
+    workflow_log = WorkflowLog.objects.get(id=workflow_log_id)
+    worker = workflow_log.performed_on
+
     WORKER_ENDPOINT = "%s://%s:%s" % (protocol, worker.ip, str(worker.port))
     WORKER_SECRET_KEY = worker.secret_key
 
     conn = BotConnection(WORKER_ENDPOINT, WORKER_SECRET_KEY)
     conn.connect()
 
-    # make a json
+    # Make a JSON
     request_header = {'workflow_log_id': workflow_log.id,
                       'workflow': slugify(workflow_log.workflow.title),
                       'workflow_log_time': workflow_log.date_created.strftime('%Y%m%d-%H%M%S'),
@@ -77,17 +88,18 @@ def run_workflow(workflow_log, worker):
     conn.close()
 
     workflow_log.outputs = outputs
+    workflow_log.exit_code = workflow_log.SUCCESS
     workflow_log.save()
-    
-    # Notify user in case of failure 
+
+    # Notify user in case of failure
     if workflow_log.exit_code == workflow_log.ERROR:
         subject = "[3BOT] Workflow '%s' has failed" % (workflow_log.workflow.title)
         message = "Your workflow %s%s has failed.\n -- 3bot" % (Site.objects.get_current(), workflow_log.get_absolute_url())
         workflow_log.performed_by.email_user(subject, message)
-    return True
+    # return True
 
 
-def send_script(request, conn, REQUEST_TIMEOUT=15000, REQUEST_RETRIES=1):
+def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
     request = threebot_crypto.encrypt(request, secret_key=conn.secret_key)
     retries_left = REQUEST_RETRIES
     response = {}

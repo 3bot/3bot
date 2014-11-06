@@ -1,9 +1,11 @@
 from django import forms
+from django.forms.models import modelformset_factory
+from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from organizations.models import Organization
 from organizations.utils import create_organization
 
-from .utils import get_possible_parameters, get_accessible_worker, getCurrOrg
+from .utils import get_possible_parameters, get_accessible_worker, get_curr_org
 from .utils import get_preset_param, get_preset_worker, get_possible_owners, get_possible_lists, get_preset_list
 from .models import Worker
 from .models import Workflow
@@ -56,6 +58,54 @@ class OrganizationParameterCreateForm(forms.ModelForm):
 class OrganizationParameterChangeForm(OrganizationParameterCreateForm):
     class Meta(OrganizationParameterCreateForm.Meta):
         exclude = ('owner',)
+
+
+def make_organization_parameter_formset(org, extra=3):
+    """
+    This is a workaround for passing custom parameters (the parameter owner in our case)
+    to a ModelFormset and is based on this stackoverflow answer:
+    http://stackoverflow.com/a/1376616
+    """
+    class _OrganizationParameterCreateForm(forms.ModelForm):
+        class Meta:
+            model = OrganizationParameter
+            fields = ['data_type', 'name', 'value', 'owner', ]
+            widgets = {
+                'data_type': forms.Select(attrs={'class': 'form-control', }),
+                'name': forms.TextInput(attrs={'class': 'form-control', }),
+                'value': forms.TextInput(attrs={'class': 'form-control', }),
+                'owner': forms.HiddenInput(),
+            }
+
+        def __init__(self, *args, **kwargs):
+            # self.org = org
+            super(_OrganizationParameterCreateForm, self).__init__(*args, **kwargs)
+            self.fields['owner'].initial = org
+    return modelformset_factory(OrganizationParameter, form=_OrganizationParameterCreateForm, extra=extra)
+
+
+def make_user_parameter_formset(user, extra=3):
+    """
+    This is a workaround for passing custom parameters (the parameter owner in our case)
+    to a ModelFormset and is based on this stackoverflow answer:
+    http://stackoverflow.com/a/1376616
+    """
+    class _UserParameterCreateForm(forms.ModelForm):
+        class Meta:
+            model = UserParameter
+            fields = ['data_type', 'name', 'value', 'owner', ]
+            widgets = {
+                'data_type': forms.Select(attrs={'class': 'form-control', }),
+                'name': forms.TextInput(attrs={'class': 'form-control', }),
+                'value': forms.TextInput(attrs={'class': 'form-control', }),
+                'owner': forms.HiddenInput(),
+            }
+
+        def __init__(self, *args, **kwargs):
+            # user = kwargs.pop('user')
+            super(_UserParameterCreateForm, self).__init__(*args, **kwargs)
+            self.fields['owner'].initial = user
+    return modelformset_factory(UserParameter, form=_UserParameterCreateForm, extra=extra)
 
 
 class ParameterListSelectForm(forms.Form):
@@ -141,7 +191,7 @@ class WorkerForm(forms.ModelForm):
     """Base Worker Form"""
     class Meta:
         model = Worker
-        fields = ['title', 'ip', 'port', 'secret_key', 'pre_task', 'post_task', ]
+        fields = ['title', 'ip', 'port', 'muted', 'secret_key', 'pre_task', 'post_task', ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', }),
             'ip': forms.TextInput(attrs={'class': 'form-control', }),
@@ -160,13 +210,14 @@ class WorkerCreateForm(WorkerForm):
     """Form to create a Worker"""
     class Meta(WorkerForm.Meta):
         fields = ['owner', ] + WorkerForm.Meta.fields
+        exclude = ['muted']
         WorkerForm.Meta.widgets['owner'] = forms.Select(attrs={'class': 'form-control'})
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
         super(WorkerCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class WorkerChangeForm(WorkerForm):
@@ -201,7 +252,7 @@ class TaskCreateForm(TaskForm):
         request = kwargs.pop('request')
         super(TaskCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class TaskChangeForm(TaskForm):
@@ -240,7 +291,7 @@ class WorkflowCreateForm(WorkflowForm):
         request = kwargs.pop('request')
         super(WorkflowCreateForm, self).__init__(*args, **kwargs)
         self.fields['owner'].queryset = get_possible_owners(request)
-        self.fields['owner'].initial = getCurrOrg(request)
+        self.fields['owner'].initial = get_curr_org(request)
 
 
 class WorkflowChangeForm(WorkflowForm):

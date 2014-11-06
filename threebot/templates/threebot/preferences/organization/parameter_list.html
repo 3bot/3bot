@@ -10,6 +10,8 @@ Organization settings
 
 {% include "threebot/preferences/organization/_tab_navigation.html" %}
 
+<h3>ParameterList - {{ list.title }}</h3>
+
 <form action="." method="post" accept-charset="utf-8">
   {{ formset.management_form }}
   {% csrf_token %}
@@ -41,13 +43,4 @@ Organization settings
     <button type="submit" class="btn btn-danger pull-right disabled" name="_delete" value="_delete"><span class="glyphicon glyphicon-trash"></span> Delete selected</button>
   </p>
 </form>
-
-<h3>Lists</h3>
-<ul class="list-unstyled">
-{% for list in lists %}
-<li><a href="{% url 'core_organization_parameter_list' organization.slug list.id %}">{{ list.title }}</a></li>
-{% empty %}
----
-{% endfor %}
-</ul>
 {% endblock %}

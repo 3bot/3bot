@@ -1,0 +1,20 @@
+{% extends "threebot/worker/detail_base.html" %}
+{% load staticfiles %}
+{% load sekizai_tags %}
+{% load threebot_tags %}
+
+{% block inner_content %}
+<div class="row">
+  <div class="col-lg-8">
+    <p>Your Worker settings are now saved to the database. To finish the setup switch to your Worker Mashine and type the following command into a Terminal.</p>
+
+    <pre>curl -# https://gist.githubusercontent.com/walterrenner/4d8863043404bec01d0f/raw/install.bash | bash</pre>
+
+    <p>After finishing the installation on the worker mashine, refresh this page and the accessible-icon obove should change.</p>
+
+    <p>You can visit the gist to see what happens: <a href="https://gist.github.com/walterrenner/4d8863043404bec01d0f">https://gist.github.com/walterrenner/4d8863043404bec01d0f</a></p>
+
+    <!-- <p><a href="#" type="button">[TODO] email this instruction to ...</a></p> -->
+  </div>
+</div>
+{% endblock %}

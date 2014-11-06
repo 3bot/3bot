@@ -1,0 +1,23 @@
+<div id="delete_modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Delete Worker - {{ worker }}</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the Worker <strong>{{ worker }}</strong></p>
+      </div>
+      <div class="modal-footer">
+        <form style="display: inline;" action="{% url 'core_worker_delete' worker.slug %}" method="post" accept-charset="utf-8">
+          {% csrf_token %}
+          <select style="display: none;" name="sure_delete" id="sure_delete" size="1" class="uniform">
+            <option value="Yes" selected="selected">Yes</option>
+          </select>
+          <input type="submit" class="btn btn-danger" value="Yes, delete this Worker">
+        </form>
+        <button type="button" class="btn btn-default" data-dismiss="modal">No, don't delete</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

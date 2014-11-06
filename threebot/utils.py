@@ -7,6 +7,10 @@ from .models import UserParameter
 from .models import OrganizationParameter
 from .models import WorkflowPreset, WorkflowTask, Worker, Workflow, Task, WorkflowLog, ParameterList
 
+import logging
+
+logger = logging.getLogger('3bot')
+
 
 def filter_workflow_log_history(workflow=None, teams=None, exit_code=None, user=None, worker=None, quantity=None):
     """returns a queryset of workflow-logs filtered by given parameters"""
@@ -34,7 +38,7 @@ def has_admin_permission(user, organization):
 
 
 @login_required
-def getCurrOrg(request):
+def get_curr_org(request):
     org = Organization.objects.get(slug="3bot")  # request.user)
     request.session['currOrg'] = org.slug
     request.session.modified = True
@@ -42,16 +46,18 @@ def getCurrOrg(request):
 
 
 @login_required
-def get_my_orgs(request):
-    orgs = Organization.objects.filter(users=request.user)
+def get_my_orgs(request, an_user=None):
+    if request is not None and an_user is None:
+        an_user = request.user
+    orgs = Organization.objects.filter(users=an_user)
     if not orgs:
         default_org = Organization(slug='3bot', name="3bot")
         default_org.save()
-        org_user = OrganizationUser(organization=default_org, user=request.user, is_admin=True)
+        org_user = OrganizationUser(organization=default_org, user=an_user, is_admin=True)
         org_user.save()
         org_owner = OrganizationOwner(organization=default_org, organization_user=org_user)
         org_owner.save()
-        orgs = Organization.objects.filter(users=request.user)
+        orgs = Organization.objects.filter(users=an_user)
     return orgs
 
 
@@ -177,10 +183,21 @@ def create_workflow_with(task):
     return workflow
 
 
-def clone_task_for_team(task, team):
-    cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
-    cloned_task.save()
-    return cloned_task
+def clone_task_for_team(user, task, team):
+    # check if user is member in both teams
+    if user in team.users.all() and user in task.owner.users.all():
+        if not task.is_builtin and not task.is_readonly:
+            cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
+            cloned_task.save()
+            return cloned_task
+        else:
+            # user need admin permission to clone this task
+            if has_admin_permission(user, task.owner):
+                cloned_task = Task(owner=team, title=task.title, desc=task.desc, template=task.template, is_builtin=task.is_builtin, is_readonly=task.is_readonly)
+                cloned_task.save()
+                return cloned_task
+
+    raise Exception("%s is not allowed to clone Task: %s (id: %i)" % (user.username, task, task.id))
 
 
 def render_templates(workflow_log, mask=False):
@@ -211,12 +228,14 @@ def render_template(workflow_log, workflow_task, mask=False):
         for key, value in inputs['password'].iteritems():
             inputs['password'][key] = '***'
 
-    # TODO: provide more information and document this type of inputs in knowledge base
+    # Update reserved identifiers /keywords
+    inputs['payload'] = workflow_log.inputs.get('payload', {})
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
+    # TODO: provide more information and document this type of inputs in knowledge base
 
+    # Script/tempate rendering
     wf_context = Context(inputs)
-
     unrendered = workflow_task.task.template
     template = Template(unrendered)
     rendered = template.render(wf_context)

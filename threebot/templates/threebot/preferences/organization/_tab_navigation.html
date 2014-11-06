@@ -1,10 +1,16 @@
 {% load threebot_tags %}
 
 <ul class="nav nav-tabs" role="tablist" style="margin: 0 0 15px;">
-  <li><a href="{% url 'organization_detail' organization.pk %}">Members</a></li>
+  {% url 'organization_detail' organization.pk as organization_detail_url %}
+  <li {% if organization_detail_url == request.path %}class="active"{% endif %}><a href="{{ organization_detail_url }}">Members</a></li>
+  
   {% if organization|can_be_administarated_by:request.user %}
-  <li><a href="{% url 'organization_edit' organization.pk %}">Edit</a>
-  <li {% if parameter %}class="active" {% endif %}><a href="{% url 'core_organization_parameter' slug=organization.slug %}">Parameter</a></li>
-  <li><a href="#">Recent Activity</a></li>
+  {% url 'organization_edit' organization.pk as organization_edit_url %}
+  <li {% if organization_edit_url == request.path %}class="active"{% endif %}><a href="{{ organization_edit_url }}">Edit</a>
+  
+  {% url 'core_organization_parameter' slug=organization.slug as core_organization_parameter_url %}  
+  <li {% if core_organization_parameter_url == request.path %}class="active"{% endif %}><a href="{{ core_organization_parameter_url }}">Parameter</a></li>
+  
+  <li class="disabled"><a href="#" title="working hard on it">Recent Activity</a></li>
   {%endif%}
 </ul>

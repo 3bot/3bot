@@ -19,15 +19,23 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="/" style="padding: 10px 15px;"><img width="32" src="{% static "threebot/img/logo_128.png" %}"></a>
-        <!-- <a id="" class="navbar-brand" href="{% url 'core_workflow_list' %}">Workflows</a> -->
 
       </div>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li id="nav_workflows"><a href="{% url 'core_workflow_list' %}">Workflows</a></li>
-          <li id="nav_tasks"><a href="{% url 'core_task_list' %}">Tasks</a></li>
-          <li id="nav_workers"><a href="{% url 'core_worker_list' %}">Workers</a></li>
+          {% url 'core_workflow_list' as core_workflow_list_url %}
+          <li {% if request.path == core_workflow_list_url %}class="active"{% endif %} id="nav_workflows">
+            <a href="{{ core_workflow_list_url }}">Workflows</a></li>
+
+          {% url 'core_task_list' as core_task_list_url %}
+          <li {% if request.path == core_task_list_url %}class="active"{% endif %} id="nav_tasks">
+            <a href="{{ core_task_list_url }}">Tasks</a></li>
+
+          {% url 'core_worker_list' as core_worker_list_url %}
+          <li {% if request.path == core_worker_list_url %}class="active"{% endif %} id="nav_workers">
+            <a href="{{ core_worker_list_url }}">Workers</a></li>
+
         </ul>
         {% comment %}
         <form class="navbar-form navbar-right" role="search">
@@ -39,11 +47,11 @@
         {% endcomment %}
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account&nbsp;<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ request.user.username }}&nbsp;<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li>
                 <a href="{% url 'core_user_profile' %}">
-                  <span class="glyphicon glyphicon-user"></span>&nbsp;{{ request.user }}
+                  <span class="glyphicon glyphicon-user"></span>&nbsp;{{ request.user.username }}
                 </a>
               </li>
               <li class="divider"></li>

@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.core.validators import validate_email
 
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
@@ -20,6 +21,7 @@ from jsonfield import JSONField
 
 
 VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of letters, numbers, and underscores. Python Keywords are not allowed."
+RESERVED_IDENTIFIERS = ['log', 'payload']
 
 
 def is_valid_identifier(identifier):
@@ -27,7 +29,7 @@ def is_valid_identifier(identifier):
         return False
     return True
 
-
+@python_2_unicode_compatible
 class Worker(models.Model):
     ACCESS_REQUEST_TIMEOUT = 1
 
@@ -41,7 +43,9 @@ class Worker(models.Model):
     ip = models.IPAddressField("IP-Address",)
     addr = models.CharField(max_length=200, null=True, blank=True, help_text='For now we use the IP to connect to the worker')
     port = models.PositiveIntegerField(default=55555)
-    secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key')
+    secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key. Never share yours.')
+
+    muted = models.BooleanField(default=False, help_text="Mute a Worker to prevent accessibility checks and improve performance.")
 
     pre_task = models.TextField(null=True, blank=True, help_text='this will run as a Script before the worker performs a workflow')
     post_task = models.TextField(null=True, blank=True, help_text='this will run as a Script after the worker has performed a workflow')
@@ -53,10 +57,13 @@ class Worker(models.Model):
 
     @property
     def is_accessible(self):
+        if self.muted:
+            return False
+
         try:
             from .botconnection import BotConnection
-            from .runflow import send_script
-        
+            from .tasks import send_script
+
             protocol = "tcp"
             WORKER_ENDPOINT = "%s://%s:%s" % (protocol, self.ip, str(self.port))
             WORKER_SECRET_KEY = str(self.secret_key)
@@ -69,7 +76,7 @@ class Worker(models.Model):
 
             if resp and resp['type'] == 'ACK':
                 return True
-        except: 
+        except:
             pass
         return False
 
@@ -87,10 +94,11 @@ class Worker(models.Model):
         return ('core_worker_detail', (), {
             'slug': self.slug})
 
-    def __unicode__(self):
-        return str(self.title)
+    def __str__(self):
+        return self.title
 
 
+@python_2_unicode_compatible
 class Task(models.Model):
     unique_identifier = models.CharField(max_length=255, null=True, blank=True, help_text="Unique Identifier to group multiple Task Versions")
     version_major = models.PositiveIntegerField(null=True, blank=True, default=0)
@@ -149,7 +157,7 @@ class Task(models.Model):
         for i in found_inputs:
             msg = '"%s" is not a valid input declaration.' % str(i.encode('utf-8').strip())
             inp = i.strip().split(".")
-            if not inp[0] == 'log':
+            if inp[0] not in RESERVED_IDENTIFIERS:
                 try:
                     if not inp[0] or not inp[1]:
                         raise ValidationError({field: [msg, ]})
@@ -165,7 +173,7 @@ class Task(models.Model):
 
     @property
     def type(self):
-        known_types = ['sh', 'python', 'ruby', 'pearl', 'bash', 'php', 'node', 'osascript']
+        known_types = ['bash', 'sh', 'python', 'ruby', 'pearl', 'php', 'node', 'osascript']
 
         if self.is_builtin:
             return "built-in"
@@ -202,10 +210,10 @@ class Task(models.Model):
         return ('core_task_detail', (), {
             'slug': self.slug})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or self.desc or str(self.pk)
 
-
+@python_2_unicode_compatible
 class Workflow(models.Model):
     unique_identifier = models.CharField(max_length=255, null=True, blank=True, help_text="Unique Identifier to group multiple Workflow Versions")
     version_major = models.PositiveIntegerField(null=True, blank=True, default=0)
@@ -249,10 +257,11 @@ class Workflow(models.Model):
         return ('core_workflow_detail', (), {
             'slug': self.slug})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or self.desc or str(self.pk)
 
 
+@python_2_unicode_compatible
 class WorkflowPreset(models.Model):
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
     user = models.ForeignKey(User, verbose_name=("User"))
@@ -302,10 +311,11 @@ class WorkflowPreset(models.Model):
 
         return not errors
 
-    def __unicode__(self):
+    def __str__(self):
         return "Preset for %s (%s)" % (self.workflow, self.user)
 
 
+@python_2_unicode_compatible
 class WorkflowTask(models.Model):
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
     task = models.ForeignKey(Task, verbose_name=_("Task"))
@@ -330,7 +340,7 @@ class WorkflowTask(models.Model):
 
         super(WorkflowTask, self).delete(*args, **kwargs)  # Call the "real" save() method
 
-    def __unicode__(self):
+    def __str__(self):
         if self.prev_workflow_task:
             s = str(self.prev_workflow_task.task.slug)
         else:
@@ -342,18 +352,21 @@ class WorkflowTask(models.Model):
         return "%s: %s -(%s)-> %s" % (str(self.workflow), str(s), str(self.task.slug), str(n))
 
 
+@python_2_unicode_compatible
 class WorkflowLog(models.Model):
     SUCCESS = 0
     ERROR = 1
+    PENDING = 2
 
     EXIT_CODE_CHOICES = (
         (SUCCESS, 'Success'),
         (ERROR, 'Error'),
+        (PENDING, 'Pending'),
     )
 
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
     date_created = models.DateTimeField(auto_now_add=True, help_text='Date the workflow was performed')
-    exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=SUCCESS)
+    exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=PENDING)
     performed_by = models.ForeignKey(User, help_text="The User who performed the Worfkflow")
     performed_on = models.ForeignKey(Worker, help_text="The Worker Worfkflow was performed on")
 
@@ -367,12 +380,12 @@ class WorkflowLog(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('core_wokflow_log_detail', (), {
+        return ('core_workflow_log_detail', (), {
             'slug': self.workflow.slug,
             'id': self.id})
 
-    def __unicode__(self):
-        return "%s logged on %s" % (self.workflow.title, str(self.date_created))
+    def __str__(self):
+        return "%s - %s logged %s" % (self.date_created.strftime('%d.%m.%y %M:%H'), str(self.performed_by), self.workflow.title, )
 
 
 class Parameter(models.Model):
@@ -418,6 +431,7 @@ class Parameter(models.Model):
             pass
 
 
+@python_2_unicode_compatible
 class UserParameter(Parameter):
     owner = models.ForeignKey(User, help_text="Parameter owner")
 
@@ -447,7 +461,7 @@ class UserParameter(Parameter):
                     }
                 )
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s (%s)" % (self.data_type, self.name, self.owner)
 
     @models.permalink
@@ -456,6 +470,7 @@ class UserParameter(Parameter):
             'id': self.id})
 
 
+@python_2_unicode_compatible
 class OrganizationParameter(Parameter):
     owner = models.ForeignKey(Organization, help_text="Parameter owner")
 
@@ -485,7 +500,7 @@ class OrganizationParameter(Parameter):
                     }
                 )
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s (%s)" % (self.data_type, self.name, self.owner)
 
     @models.permalink
@@ -495,6 +510,7 @@ class OrganizationParameter(Parameter):
             'id': self.id})
 
 
+@python_2_unicode_compatible
 class ParameterList(models.Model):
     """
     ParameterList
@@ -510,4 +526,7 @@ class ParameterList(models.Model):
         ordering = ['title', 'date_created', ]
         verbose_name = _("Parameter List")
         verbose_name_plural = _("Parameter Lists")
+        
+    def __str__(self):
+        return self.title
 
