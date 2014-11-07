@@ -1,14 +1,14 @@
 from django.contrib import admin
 
-from .models import Worker
-from .models import Task
-from .models import Workflow
-from .models import WorkflowTask
-from .models import WorkflowLog
-from .models import WorkflowPreset
-from .models import UserParameter
-from .models import OrganizationParameter
-from .models import ParameterList
+from threebot.models import Worker
+from threebot.models import Task
+from threebot.models import Workflow
+from threebot.models import WorkflowTask
+from threebot.models import WorkflowLog
+from threebot.models import WorkflowPreset
+from threebot.models import UserParameter
+from threebot.models import OrganizationParameter
+from threebot.models import ParameterList
 
 
 class WorkerAdmin(admin.ModelAdmin):

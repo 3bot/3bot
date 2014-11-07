@@ -1,10 +1,10 @@
-from django import template 
+from django import template
 from urllib import quote_plus
 
 
 from threebot import __version__
-from ..utils import get_my_orgs, get_preset_worker, has_admin_permission
-from ..models import WorkflowPreset
+from threebot.utils import get_my_orgs, get_preset_worker, has_admin_permission
+from threebot.models import WorkflowPreset
 
 register = template.Library()
 
@@ -54,3 +54,13 @@ def get_threebot_version():
 @register.filter
 def quoteplus(value):
     return quote_plus(value)
+
+
+@register.filter
+def lsplit(s, splitter):
+    return s.split(splitter)[0]
+
+
+@register.filter
+def rsplit(s, splitter):
+    return s.split(splitter)[-1]

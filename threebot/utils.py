@@ -3,9 +3,9 @@ from django.template import Template, Context
 
 from organizations.models import Organization, OrganizationUser, OrganizationOwner
 
-from .models import UserParameter
-from .models import OrganizationParameter
-from .models import WorkflowPreset, WorkflowTask, Worker, Workflow, Task, WorkflowLog, ParameterList
+from threebot.models import UserParameter
+from threebot.models import OrganizationParameter
+from threebot.models import WorkflowPreset, WorkflowTask, Worker, Workflow, Task, WorkflowLog, ParameterList
 
 import logging
 

@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% load sekizai_tags %}
+{% load threebot_tags %}
 
 {% block doctitle %}
 Logged {{ workflow }}
 {% endblock %}
 
-
 {% block content %}
-
-
 <div class="row">
   <div class="col-sm-10">
     <h2>
@@ -31,18 +29,38 @@ Logged {{ workflow }}
   <div class="col-sm-12">
     <ul class="list-inline">
       <li></li><strong>Logged by:</strong> {{ workflow_log.performed_by }}</li>
-      <li><strong>Log Time:</strong> {{ workflow_log.date_created }}</li>
+      <li><strong>Log Time:</strong> {{ workflow_log.date_created|date:"d.m.y H:i" }}</li>
       <li><strong>Log worker:</strong> <a href="{{ workflow_log.performed_on.get_absolute_url }}">{{ workflow_log.performed_on }}</a></li>
     </ul>
   </div>
 </div>
 
-<div class="row">
-  <div class="col-sm-12">
-    <h3>Output</h3>
-    <pre style="background-color:#333; color:#32CD32; padding:12px; font-family: monospace;">{% for k,v in outputs %}<b>{{ k }}:</b><br>{{ v.output }}<br><br>{% endfor %}</pre>
+{% for wf_task, output in outputs %}
+<!-- Nav tabs -->
+<h4 style="padding-top:20px;"><span class="glyphicon workflow-{% if output.exit_code == 0 %}Success{% else %}Error{% endif %}"></span> {{ wf_task|rsplit:"_" }}</h4>
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="active"><a href="#{{ wf_task}}_stdout" role="tab" data-toggle="tab">Console Output</a></li>
+  <li role="presentation"><a href="#{{ wf_task}}_stderr" role="tab" data-toggle="tab">Error Stream</a></li>
+  <li role="presentation"><a href="#{{ wf_task}}_html" role="tab" data-toggle="tab">Rendered HTML</a></li>
+</ul>
+<div class="tab-content">
+  <div role="tabpanel" class="tab-pane active" id="{{ wf_task }}_stdout">
+    <!-- Backwards combability -->
+    {% if output.outputs %}
+    <pre style="border-top: none; border-radius: 0; background-color:white; color:darkgreen; padding:12px; font-family: monospace;">{{ output.outputs|default:"---" }}</pre>
+    {% endif %}
+
+    <pre style="border-top: none; border-radius: 0; background-color:white; color:darkgreen; padding:12px; font-family: monospace;">{{ output.stdout|default:"---" }}</pre>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="{{ wf_task }}_stderr">
+    <pre style="border-top: none; border-radius: 0; background-color:white; color:red; padding:12px; font-family: monospace;">{{ output.stderr|default:"---" }}</pre>
+  </div>
+  <div role="tabpanel" class="tab-pane" id="{{ wf_task }}_html">
+    <iframe class="col-sm-12" id="html-{{ k|slugify }}" src="{% url 'core_workflow_log_detail_render' workflow.slug workflow_log.id %}?task={{ wf_task }}&format=html"></iframe>
   </div>
 </div>
+{% endfor %}
 
 {% if templates %}
 <!-- Modal -->
@@ -75,12 +93,27 @@ $(function() {
     $('.show-tooltip').tooltip({placement: 'bottom'});
 });
 
-log_exit_code = '{{ workflow_log.exit_code|escapejs }}'
+var log_exit_code = '{{ workflow_log.exit_code|escapejs }}';
 if (log_exit_code == '2') {
     setInterval(function() {
           window.location.reload();
         }, 5000);
 }
+
+{% for wf_task, output in outputs %}
+$('#{{ wf_task }}_stdout a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+});
+$('#{{ wf_task }}_stderr a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+});
+$('#{{ wf_task }}_html a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+});
+{% endfor %}
 </script>
 {% endaddtoblock "js" %}
 

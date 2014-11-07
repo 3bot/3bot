@@ -6,17 +6,17 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.http import HttpResponse
 
-from ..models import Task
-from ..models import Worker
-from ..models import Workflow
-from ..models import WorkflowTask
-from ..models import WorkflowPreset
-from ..models import UserParameter, Parameter
-from ..models import OrganizationParameter, ParameterList
-from ..models import WorkflowLog
-from ..utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
-from ..forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
-from ..tasks import run_workflow
+from threebot.models import Task
+from threebot.models import Worker
+from threebot.models import Workflow
+from threebot.models import WorkflowTask
+from threebot.models import WorkflowPreset
+from threebot.models import UserParameter, Parameter
+from threebot.models import OrganizationParameter, ParameterList
+from threebot.models import WorkflowLog
+from threebot.utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
+from threebot.forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
+from threebot.tasks import run_workflow
 
 
 @login_required
@@ -339,20 +339,27 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
 
 
 @login_required
-def log_detail_output(request, slug, id, outputslug):
+def log_detail_render(request, slug, id):
+    # get id params, slug+type
+    format = request.GET.get("format", 'raw')
+    wf_task_slug = request.GET.get("task")
+
     orgs = get_my_orgs(request)
     workflow_log = get_object_or_404(WorkflowLog, id=id)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
-    lookup_key = unquote_plus(outputslug)
+    lookup_key = unquote_plus(wf_task_slug)
     output_item = workflow_log.outputs[lookup_key]
-    
-    format = request.GET.get("format", 'raw')
+
+    try:
+        output = output_item['stdout']
+    except KeyError:
+        output = output_item['output']
+
     if format == 'raw':
-        return HttpResponse(output_item['output'], content_type="text/plain")
+        return HttpResponse(output, content_type="text/plain")
     elif format == 'html':
-        return HttpResponse(output_item['output'], content_type="text/html")
-        
-        
+        return HttpResponse(output, content_type="text/html")
+
 
 @login_required
 def replay(request, slug, id):

@@ -5,13 +5,13 @@ from django.utils.safestring import mark_safe
 from organizations.models import Organization
 from organizations.utils import create_organization
 
-from .utils import get_possible_parameters, get_accessible_worker, get_curr_org
-from .utils import get_preset_param, get_preset_worker, get_possible_owners, get_possible_lists, get_preset_list
-from .models import Worker
-from .models import Workflow
-from .models import Task
-from .models import UserParameter, OrganizationParameter, ParameterList
-from .utils import order_workflow_tasks
+from threebot.utils import get_possible_parameters, get_accessible_worker, get_curr_org
+from threebot.utils import get_preset_param, get_preset_worker, get_possible_owners, get_possible_lists, get_preset_list
+from threebot.models import Worker
+from threebot.models import Workflow
+from threebot.models import Task
+from threebot.models import UserParameter, OrganizationParameter, ParameterList
+from threebot.utils import order_workflow_tasks
 
 
 class UserParameterCreateForm(forms.ModelForm):

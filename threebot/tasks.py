@@ -2,9 +2,9 @@ import zmq
 from copy import deepcopy
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
-from .utils import render_template, order_workflow_tasks, importCode
-from .botconnection import BotConnection
-from .models import WorkflowLog
+from threebot.utils import render_template, order_workflow_tasks, importCode
+from threebot.botconnection import BotConnection
+from threebot.models import WorkflowLog
 import threebot_crypto
 from background_task import background
 
@@ -58,7 +58,7 @@ def run_workflow(workflow_log_id):
         if workflow_task.task.is_builtin:
             m = importCode(template, "test")
             output = {}
-            output['output'] = str(m.run())
+            output['stdout'] = str(m.run())
             output['exit_code'] = workflow_log.SUCCESS
         else:
             request = request_header
@@ -83,6 +83,7 @@ def run_workflow(workflow_log_id):
 
         if 'exit_code' not in output or output['exit_code'] is not workflow_log.SUCCESS:
             workflow_log.exit_code = workflow_log.ERROR
+            workflow_log.save()
             break
 
     conn.close()

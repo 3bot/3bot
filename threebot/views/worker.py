@@ -4,9 +4,9 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from ..models import Worker
-from ..forms import WorkerChangeForm, WorkerCreateForm
-from ..utils import get_my_orgs, filter_workflow_log_history
+from threebot.models import Worker
+from threebot.forms import WorkerChangeForm, WorkerCreateForm
+from threebot.utils import get_my_orgs, filter_workflow_log_history
 
 
 @login_required

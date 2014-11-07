@@ -8,9 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 from organizations.models import Organization
-from ..models import Task, WorkflowTask, Workflow
-from ..utils import get_my_orgs, create_workflow_with, has_admin_permission, clone_task_for_team
-from ..forms import TaskChangeForm, TaskCreateForm, TaskImportForm
+from threebot.models import Task, WorkflowTask, Workflow
+from threebot.utils import get_my_orgs, create_workflow_with, has_admin_permission, clone_task_for_team
+from threebot.forms import TaskChangeForm, TaskCreateForm, TaskImportForm
 
 
 @login_required

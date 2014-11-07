@@ -6,8 +6,8 @@ from django.template import RequestContext
 
 from organizations.models import Organization, OrganizationUser
 
-from ..models import OrganizationParameter, UserParameter, ParameterList
-from ..forms import (
+from threebot.models import OrganizationParameter, UserParameter, ParameterList
+from threebot.forms import (
     UserParameterCreateForm,
     OrganizationParameterCreateForm,
     OrganizationCreateForm,

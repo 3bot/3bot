@@ -22,9 +22,7 @@ urlpatterns = patterns('threebot.views',
     url(r'^task/$', view='task.list', name='core_task_list'),
 
     url(r'^workflow/add/$', view='workflow.create', name='core_workflow_create'),
-    url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/(?P<outputslug>[-_.,+\w]+)/$', 
-            view='workflow.log_detail_output', 
-            name='core_workflow_log_detail_output'),
+    url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/render/$', view='workflow.log_detail_render', name='core_workflow_log_detail_render'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/$', view='workflow.log_detail', name='core_workflow_log_detail'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/replay/$', view='workflow.replay', name='core_workflow_replay'),
 
