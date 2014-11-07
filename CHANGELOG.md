@@ -1,6 +1,19 @@
 # Changelog
 
 
+### Latest
+
+*
+
+
+### 0.0.17 - 07.11.2014
+
+*   fixing interchange for minutes and hours
+*   render output html automatically
+*   catch STDERR and display in log detail
+*   split output for each Task in log detail
+
+
 ### 0.0.16 - 31.10.2014
 
 *   Added @python_2_unicode_compatible for Python 2 - Python 3 compatibility
@@ -10,6 +23,7 @@
 *   better __str__ method for WorkflowLog Model
 *   Fixied typo wokflow -> workflow
 *   smart include hook urls
+
 
 ### 0.0.15 - 29.10.2014
 
