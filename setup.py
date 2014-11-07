@@ -18,16 +18,10 @@ setup(
     version=app.__version__,
     description="3bot is an open-source software platform to build, configure and perform your repetitive tasks.",
     long_description=long_description(),
+    author='arteria GmbH',
     author_email="admin@arteria.ch",
     maintainer_email="renner@arteria.ch",
     packages=find_packages(),
     include_package_data=True,
-
-    install_requires=[
-        "jsonfield",
-        "django-sekizai",
-        "django-background-task",
-        "pyzmq",
-        "threebot_crypto",
-    ],
+    install_requires=open('requirements.txt').read().split('\n'),
 )

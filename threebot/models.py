@@ -526,7 +526,6 @@ class ParameterList(models.Model):
         ordering = ['title', 'date_created', ]
         verbose_name = _("Parameter List")
         verbose_name_plural = _("Parameter Lists")
-        
+
     def __str__(self):
         return self.title
-

@@ -13,7 +13,7 @@ from threebot.forms import (
     OrganizationCreateForm,
     make_organization_parameter_formset,
     make_user_parameter_formset)
-from ..utils import filter_workflow_log_history
+from threebot.utils import filter_workflow_log_history
 
 
 @login_required
