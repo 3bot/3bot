@@ -39,24 +39,26 @@ Logged {{ workflow }}
 <!-- Nav tabs -->
 <h4 style="padding-top:20px;"><span class="glyphicon workflow-{% if output.exit_code == 0 %}Success{% else %}Error{% endif %}"></span> {{ wf_task|rsplit:"_" }}</h4>
 <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active"><a href="#{{ wf_task}}_stdout" role="tab" data-toggle="tab">Console Output</a></li>
-  <li role="presentation"><a href="#{{ wf_task}}_stderr" role="tab" data-toggle="tab">Error Stream</a></li>
-  <li role="presentation"><a href="#{{ wf_task}}_html" role="tab" data-toggle="tab">Rendered HTML</a></li>
+  <li role="presentation" class="active"><a href="#{{ wf_task|lsplit:"_" }}_stdout" role="tab" data-toggle="tab">Console Output</a></li>
+  <li role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_stderr" role="tab" data-toggle="tab">Error Stream</a></li>
+  <li role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_html" role="tab" data-toggle="tab">Rendered HTML</a></li>
 </ul>
 <div class="tab-content">
-  <div role="tabpanel" class="tab-pane active" id="{{ wf_task }}_stdout">
+  <div role="tabpanel" class="tab-pane active" id="{{ wf_task|lsplit:"_" }}_stdout">
     <!-- Backwards combability -->
-    {% if output.outputs %}
-    <pre style="border-top: none; border-radius: 0; background-color:white; color:darkgreen; padding:12px; font-family: monospace;">{{ output.outputs|default:"---" }}</pre>
+    {% if output.output %}
+    <pre style="border-top: none; border-radius: 0; background-color:white; color:darkgreen; padding:12px; font-family: monospace;">{{ output.output|default:"---" }}</pre>
     {% endif %}
 
+    {% if output.stdout %}
     <pre style="border-top: none; border-radius: 0; background-color:white; color:darkgreen; padding:12px; font-family: monospace;">{{ output.stdout|default:"---" }}</pre>
+    {% endif %}
   </div>
 
-  <div role="tabpanel" class="tab-pane" id="{{ wf_task }}_stderr">
+  <div role="tabpanel" class="tab-pane" id="{{ wf_task|lsplit:"_" }}_stderr">
     <pre style="border-top: none; border-radius: 0; background-color:white; color:red; padding:12px; font-family: monospace;">{{ output.stderr|default:"---" }}</pre>
   </div>
-  <div role="tabpanel" class="tab-pane" id="{{ wf_task }}_html">
+  <div role="tabpanel" class="tab-pane" id="{{ wf_task|lsplit:"_" }}_html">
     <iframe class="col-sm-12" id="html-{{ k|slugify }}" src="{% url 'core_workflow_log_detail_render' workflow.slug workflow_log.id %}?task={{ wf_task }}&format=html"></iframe>
   </div>
 </div>
@@ -101,15 +103,15 @@ if (log_exit_code == '2') {
 }
 
 {% for wf_task, output in outputs %}
-$('#{{ wf_task }}_stdout a').click(function (e) {
+$('#{{ wf_task|lsplit:"_" }}_stdout a').click(function (e) {
   e.preventDefault()
   $(this).tab('show')
 });
-$('#{{ wf_task }}_stderr a').click(function (e) {
+$('#{{ wf_task|lsplit:"_" }}_stderr a').click(function (e) {
   e.preventDefault()
   $(this).tab('show')
 });
-$('#{{ wf_task }}_html a').click(function (e) {
+$('#{{ wf_task|lsplit:"_" }}_html a').click(function (e) {
   e.preventDefault()
   $(this).tab('show')
 });
