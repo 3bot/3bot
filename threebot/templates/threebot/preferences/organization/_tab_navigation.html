@@ -10,7 +10,8 @@
   
   {% url 'core_organization_parameter' slug=organization.slug as core_organization_parameter_url %}  
   <li {% if core_organization_parameter_url == request.path %}class="active"{% endif %}><a href="{{ core_organization_parameter_url }}">Parameter</a></li>
-  
-  <li class="disabled"><a href="#" title="working hard on it">Recent Activity</a></li>
+
+  {% url 'core_organization_activity' slug=organization.slug as core_organization_activity_url %}
+  <li {% if core_organization_activity_url == request.path %}class="active"{% endif %}><a href="{{ core_organization_activity_url }}">Activity</a></li>
   {%endif%}
 </ul>

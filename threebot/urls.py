@@ -47,6 +47,7 @@ urlpatterns = patterns('threebot.views',
     url(r'^teams/(?P<slug>[-\w]+)/parameter/(?P<id>[-\w]+)/$', view='preferences.organization_parameter_detail', name='core_organization_parameter_detail'),
     url(r'^teams/(?P<slug>[-\w]+)/parameter/list/(?P<list_id>[-\w]+)/$', view='preferences.organization_parameter_list', name='core_organization_parameter_list'),
     url(r'^teams/(?P<slug>[-\w]+)/parameter/$', view='preferences.organization_parameter', name='core_organization_parameter'),
+    url(r'^teams/(?P<slug>[-\w]+)/activity/$', view='preferences.organitazion_activity', name='core_organization_activity'),
     url(r'^teams/', include('organizations.urls')),
 
     url(r'^invitations/', include(invitation_backend().get_urls())),

@@ -6,7 +6,8 @@
         <h4 class="modal-title">Delete Workflow - {{ workflow }}</h4>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete the Workflow <strong>{{ workflow }}</strong></p>
+        <p>Are you sure you want to delete the Workflow <strong>{{ workflow }}.</strong></p>
+        <p>All Workflow Logs will be deleted, too.</p>
       </div>
       <div class="modal-footer">
         <form style="display: inline;" action="{% url 'core_workflow_delete' workflow.slug %}" method="post" accept-charset="utf-8">

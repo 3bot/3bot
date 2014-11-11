@@ -8,7 +8,7 @@ Activity
 {% block content %}
 <h2>User - {{ request.user }}</h2>
 
-{% include "threebot/preferences/user/_tab_navigation.html" %}
+{% include "threebot/preferences/organization/_tab_navigation.html" %}
 <div class="row">
   <div class="col-lg-8">
     <h3 id="log-history">Log History {% if logs %}(latest {{ logs|length }}){% endif %}</h3>

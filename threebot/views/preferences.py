@@ -187,3 +187,18 @@ def organization_parameter_delete(request, slug, id, template='threebot/preferen
 
     return render_to_response(template, {'param': param,
                                         }, context_instance=RequestContext(request))
+
+
+@login_required
+def organitazion_activity(request, slug, template='threebot/preferences/organization/activity.html'):
+    organization = get_object_or_404(Organization, slug=slug)
+    organizations = [].append(organization)
+
+    #checks if we have access
+    get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
+
+    logs = filter_workflow_log_history(teams=organizations, quantity=20)
+    return render_to_response(template, {'request': request,
+                                         'organization': organization,
+                                         'logs': logs
+                                        }, context_instance=RequestContext(request))
