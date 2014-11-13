@@ -1,2 +1,4 @@
+include README.md
+include requirements.txt
 recursive-include threebot/static *
 recursive-include threebot/templates *
