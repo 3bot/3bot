@@ -115,8 +115,8 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
         ready_to_perform = True
 
         if worker_form.is_valid():
-            worker_id = worker_form.cleaned_data['worker']
-            preset.update({'worker_id': worker_id})
+            worker_ids = worker_form.cleaned_data['worker']
+            preset.update({'worker_id': worker_ids})
         else:
             ready_to_perform = False
 
@@ -185,13 +185,15 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
             wf_preset.defaults = preset
             wf_preset.save()
 
-        worker = Worker.objects.get(id=worker_id)
-        workflow_log = WorkflowLog(workflow=workflow, inputs=inp, outputs={}, performed_by=request.user, performed_on=worker)
-        workflow_log.save()
+        workers = Worker.objects.filter(id__in=worker_ids)
 
-        run_workflow(workflow_log.id)
+        for worker in workers:
+            workflow_log = WorkflowLog(workflow=workflow, inputs=inp, outputs={}, performed_by=request.user, performed_on=worker)
+            workflow_log.save()
 
-        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
+            run_workflow(workflow_log.id)
+
+        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)  # redirects to latest
 
     # else:
     #     raise("error")
@@ -222,8 +224,8 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
     workflow_tasks = order_workflow_tasks(workflow)
 
     if worker_form.is_valid() and list_form.is_valid():
-        worker_id = worker_form.cleaned_data['worker']
-        worker = Worker.objects.get(id=worker_id)
+        worker_ids = worker_form.cleaned_data['worker']
+        workers = Worker.objects.filter(id__in=worker_ids)
 
         list_id = list_form.cleaned_data['parameter_list']
         parameter_list = ParameterList.objects.get(id=list_id)
@@ -239,15 +241,16 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
 
             input_dict['%s' % wf_task.id] = l_input_dict
 
-        workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, outputs={}, performed_by=request.user, performed_on=worker)
-        workflow_log.save()
+        for worker in workers:
+            workflow_log = WorkflowLog(workflow=workflow, inputs=input_dict, outputs={}, performed_by=request.user, performed_on=worker)
+            workflow_log.save()
 
-        wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
-        wf_preset.defaults.update({'worker_id': worker.id})
-        wf_preset.defaults.update({'list_id': parameter_list.id})
-        wf_preset.save()
+            wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
+            wf_preset.defaults.update({'worker_id': worker_ids})
+            wf_preset.defaults.update({'list_id': parameter_list.id})
+            wf_preset.save()
 
-        run_workflow(workflow_log.id)
+            run_workflow(workflow_log.id)
 
         return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 

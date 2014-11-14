@@ -130,7 +130,10 @@ def get_preset_worker(request, workflow, id=False):
         worker_id = wf_preset.defaults["worker_id"]
         if id:
             return worker_id
-        return Worker.objects.get(id=worker_id)
+        if type(worker_id) is list:
+            return Worker.objects.filter(id__in=worker_id)
+        else:
+            return Worker.objects.filter(id=worker_id)
     except (KeyError, Worker.DoesNotExist):
         pass
     return None

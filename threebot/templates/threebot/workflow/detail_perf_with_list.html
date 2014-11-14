@@ -9,7 +9,7 @@
   <div class="col-lg-6">
   <form method="post" action="." id="workflow_form" class="form-horizontal" role="form">
     {% csrf_token %}
-  <h3>Worker</h3>
+  <h3>Worker(s)</h3>
     {% if worker_form.non_field_errors %}
     {% for error in worker_form.non_field_errors %}
     <p class="bg-danger">{{ error }}</p>

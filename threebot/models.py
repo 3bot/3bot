@@ -29,6 +29,7 @@ def is_valid_identifier(identifier):
         return False
     return True
 
+
 @python_2_unicode_compatible
 class Worker(models.Model):
     ACCESS_REQUEST_TIMEOUT = 1
@@ -213,6 +214,7 @@ class Task(models.Model):
     def __str__(self):
         return self.title or self.desc or str(self.pk)
 
+
 @python_2_unicode_compatible
 class Workflow(models.Model):
     unique_identifier = models.CharField(max_length=255, null=True, blank=True, help_text="Unique Identifier to group multiple Workflow Versions")
@@ -237,6 +239,9 @@ class Workflow(models.Model):
         verbose_name = _("Workflow")
         verbose_name_plural = _("Workflows")
         unique_together = (('unique_identifier', 'version_major', 'version_minor'),)
+
+    def number_of_tasks(self):
+        return WorkflowTask.objects.filter(workflow=self).count()
 
     def save(self, *args, **kwargs):
         if not self.pk:  # first save

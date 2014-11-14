@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load sekizai_tags %}
 
 {% block doctitle %}
 Organization settings
@@ -21,26 +22,43 @@ Organization settings
         <th>Data Type*</th>
         <th>Name*</th>
         <th>Value*</th>
+        <th>Remove? <span class="glyphicon glyphicon-info-sign show-tooltip" title="Selected Parameters will be removed from the Parameter List, but still will be available for your team."></span></th>
       </tr>
     </thead>
     <tbody>
     {% for form in formset %}
       <tr>
         <td>
-          {{ form.errors }}
+          {% for error in form.errors %}
+          {{ error }}
+          {% endfor %}
           {{ form.parameter_ptr }}
           {{ form.owner }}
           {{ form.data_type }}
         </td>
         <td>{{ form.name }}</td>
         <td>{{ form.value }}</td>
+        {# this is a hack to check if instance was saved and can be deleted #}
+        {% if form.instance.owner %}
+        <td>{{ form.remove_from_list }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
       </tr>
     {% endfor %}
     </tbody>
   </table>
   <p>
     <input type="submit" class="btn btn-primary" name="save" value="Save" />
-    <button type="submit" class="btn btn-danger pull-right disabled" name="_delete" value="_delete"><span class="glyphicon glyphicon-trash"></span> Delete selected</button>
   </p>
 </form>
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(function() {
+    $('.show-tooltip').tooltip({placement: 'bottom'});
+});
+</script>
+{% endaddtoblock %}
+
 {% endblock %}

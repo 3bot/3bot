@@ -22,7 +22,7 @@ def user_profile(request, template='threebot/preferences/user/profile.html'):
     try:
         from rest_framework.authtoken.models import Token
         token = Token.objects.get(user=request.user)
-    except Exception, e:
+    except (ImportError, Token.DoesNotExist):
         pass
     return render_to_response(template, {'request': request,
                                          'token': token,
@@ -40,6 +40,9 @@ def user_parameter(request, template='threebot/preferences/user/parameter.html')
 
     if formset.is_valid():
         formset.save()
+
+        user_parameter = UserParameter.objects.all().filter(owner=request.user)
+        formset = ParamFormset(queryset=user_parameter)
 
     return render_to_response(template, {'request': request,
                                          'formset': formset,
@@ -112,6 +115,8 @@ def organization_parameter(request, slug, template='threebot/preferences/organiz
 
     if formset.is_valid():
         formset.save()
+        organization_parameter = OrganizationParameter.objects.filter(owner=organization)
+        formset = ParamFormset(queryset=organization_parameter)
 
     return render_to_response(template, {'request': request,
                                          'organization': organization,
@@ -138,7 +143,16 @@ def organization_parameter_list(request, slug, list_id, template='threebot/prefe
         parameter = formset.save()
         for param in parameter:
             p_list.parameters.add(param)
-            pass
+
+        for form in formset:
+            if form.cleaned_data.get('remove_from_list'):
+                p_list.parameters.remove(form.instance)
+
+        # catch updated list items
+        p_list = ParameterList.objects.get(id=list_id)
+        organization_parameter = p_list.parameters.all()
+        ParamFormset = make_organization_parameter_formset(organization)
+        formset = ParamFormset(queryset=organization_parameter)
 
     return render_to_response(template, {'request': request,
                                          'organization': organization,

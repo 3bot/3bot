@@ -28,6 +28,7 @@ all Workflows
       	<tr>
             <th></th>
             <th class="hidden-xs hidden-sm">Description</th>
+            <th class="hidden-xs hidden-sm" title="Nubmer of Tasks">Tasks</th>
             <th>Last performed on</th>
             <th>Team</th>
             <th></th>
@@ -45,8 +46,9 @@ all Workflows
                 </small>
             </span>
         </td>
-        {% get_last_worker_for request workflow as worker %}
-        <td>{{ worker.title|default:"---" }}</td>
+        <td>{{ workflow.number_of_tasks }}</td>
+        {% get_last_worker_for request workflow as workers %}
+        <td>{% for worker in workers %}{{ worker.title|default:"---" }}, {% endfor %}</td>
         <td>{{ workflow.owner }}</td>
         {% get_presets_for request workflow as presets %}
 		<td>

@@ -19,6 +19,7 @@ new User Parameter
         <th>Data Type*</th>
         <th>Name*</th>
         <th>Value*</th>
+        <th>Delete?</th>
       </tr>
     </thead>
     <tbody>
@@ -32,13 +33,18 @@ new User Parameter
         </td>
         <td>{{ form.name }}</td>
         <td>{{ form.value }}</td>
+        {# this is a hack to check if instance was saved and can be deleted #}
+        {% if form.instance.owner %}
+        <td>{{ form.DELETE }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
       </tr>
     {% endfor %}
     </tbody>
   </table>
   <p>
     <input type="submit" class="btn btn-primary" name="save" value="Save" />
-    <button type="submit" class="btn btn-danger pull-right disabled" name="_delete" value="_delete"><span class="glyphicon glyphicon-trash"></span> Delete selected</button>
   </p>
 </form>
 

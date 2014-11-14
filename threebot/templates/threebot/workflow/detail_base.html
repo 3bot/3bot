@@ -16,10 +16,12 @@ Workflow - {{ workflow }}
   <div class="col-lg-8">
     <ul class="list-inline">
       <li><strong>Team:</strong> {{ workflow.owner }}</li>
-      {% get_last_worker_for request workflow as worker %}
-      {% if worker %}
-      <li></li><strong>Last performed on:</strong> <a href="{{ worker.get_absolute_url }}">{{ worker }}</a></li></li>
-      {% endif %}
+      {% get_last_worker_for request workflow as workers %}
+      </li><strong>Last performed on:</strong>
+      {% for worker in workers %}
+      <a href="{{ worker.get_absolute_url }}">{{ worker }}</a>, 
+      {% endfor %}
+      </li>
       <li class="hidden-xs"><strong>Description:</strong> {{ workflow.desc|truncatechars:75 }}</li>
     </ul>
   </div>

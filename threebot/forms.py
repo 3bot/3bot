@@ -67,6 +67,8 @@ def make_organization_parameter_formset(org, extra=3):
     http://stackoverflow.com/a/1376616
     """
     class _OrganizationParameterCreateForm(forms.ModelForm):
+        remove_from_list = forms.BooleanField(required=False)
+
         class Meta:
             model = OrganizationParameter
             fields = ['data_type', 'name', 'value', 'owner', ]
@@ -81,7 +83,8 @@ def make_organization_parameter_formset(org, extra=3):
             # self.org = org
             super(_OrganizationParameterCreateForm, self).__init__(*args, **kwargs)
             self.fields['owner'].initial = org
-    return modelformset_factory(OrganizationParameter, form=_OrganizationParameterCreateForm, extra=extra)
+
+    return modelformset_factory(OrganizationParameter, form=_OrganizationParameterCreateForm, extra=extra, can_delete=True)
 
 
 def make_user_parameter_formset(user, extra=3):
@@ -105,7 +108,8 @@ def make_user_parameter_formset(user, extra=3):
             # user = kwargs.pop('user')
             super(_UserParameterCreateForm, self).__init__(*args, **kwargs)
             self.fields['owner'].initial = user
-    return modelformset_factory(UserParameter, form=_UserParameterCreateForm, extra=extra)
+
+    return modelformset_factory(UserParameter, form=_UserParameterCreateForm, extra=extra, can_delete=True)
 
 
 class ParameterListSelectForm(forms.Form):
@@ -169,22 +173,31 @@ class WorkerSelectForm(forms.Form):
 
         accessible_worker = [('', '--Choose a worker--')]
         accessible_worker += get_accessible_worker(request, workflow)
+        accessible_worker = Worker.objects.all().values_list('id', 'title')
         preset_worker_id = get_preset_worker(request, workflow, id=True)
 
-        self.fields['worker'] = forms.ChoiceField(
+        self.fields['worker'] = forms.MultipleChoiceField(
+            required=True,
             label="Worker",
             choices=accessible_worker,
             initial=preset_worker_id,
-            widget=forms.Select(attrs={'class': 'form-control', }),
+            widget=forms.SelectMultiple(attrs={'class': 'form-control', }),
             )
         self.fields['worker'].empty_label = None
 
         # workaround for displaying a message to the user
         # if no worker is acessible while initializing the form
-        if len(accessible_worker) <= 1:
+        if len(accessible_worker) <= 0:
             self.cleaned_data = {}
             msg = "There is no accessible Worker. Please cofigure a Worker first."
             self.add_error('worker', msg)
+
+    def clean(self):
+        worker_ids = self.cleaned_data['worker']
+        workers = Worker.objects.filter(id__in=worker_ids)
+        for worker in workers:
+            if not worker.is_accessible:
+                raise forms.ValidationError("worker not aceccible")
 
 
 class WorkerForm(forms.ModelForm):
