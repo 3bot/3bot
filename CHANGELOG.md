@@ -3,7 +3,19 @@
 
 ### Latest
 
-*
+* .
+
+
+### 0.0.17 - 17.11.2014
+
+* Add author and requirements file to setup.py
+* Fix template issues with illegal characters used as HTML-id
+* Add Activity tab for teams
+* Add readme and requirements to manifest.in
+* Perform Workflows on multiple Workers
+* Validate Worker accessibility in the form for better performance
+* Easier ParameterList editing
+* Add Workflow property to get number of Tasks in a Workflow
 
 
 ### 0.0.17 - 07.11.2014
