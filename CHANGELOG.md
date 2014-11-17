@@ -6,7 +6,7 @@
 * .
 
 
-### 0.0.17 - 17.11.2014
+### 0.0.18 - 17.11.2014
 
 * Add author and requirements file to setup.py
 * Fix template issues with illegal characters used as HTML-id
