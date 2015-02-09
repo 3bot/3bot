@@ -31,7 +31,7 @@ Add `sekizai`, `threebot` and `organizations` to your `INSTALLED_APPS`. The sect
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'django.contrib.sites',
-        
+
         'sekizai',
         'threebot',
         'organizations',
@@ -54,7 +54,7 @@ Add `sekizai.context_processors.sekizai`, `request` and `auth` to `TEMPLATE_CONT
 
 
 3bot provides a login form, to use it properly, add the following lines to your `settings.py` file
-    
+
     LOGIN_URL = '/login/'
     LOGIN_REDIRECT_URL = '/'
 
@@ -68,7 +68,7 @@ Next to `settings.py` you find `urls.py`. Add the patterns for `teams` and `thre
     )
 
 
-After this modifications, we have to sync the database. Therefor run the following commands in your shell or Terminal.
+After this modifications, we have to sync the database. Therefore run the following commands in your shell or Terminal.
 
     python manage.py syncdb
     python manage.py migrate
@@ -79,7 +79,7 @@ Start the development server and enjoy your fresh 3bot instance running under [h
     python manage.py runserver
 
 
-To use your new 3bot application you need to set up a worker. A worker is a computer program that runs as a background process on a machine. This could be a server, an embedded systems or your laptop. The worker execute the tasks of a workflow - they do perform. 
+To use your new 3bot application you need to set up a worker. A worker is a computer program that runs as a background process on a machine. This could be a server, an embedded systems or your laptop. The worker execute the tasks of a workflow - they do perform.
 For testing purposes we suggest to set up your first worker on localhost. Therefor you first create new Worker at [http://127.0.0.1:8000/worker/add/](http://127.0.0.1:8000/worker/add/). Choose `127.0.0.1` as IP-Address, and `55556` as port. Save your new worker head over to [https://gist.github.com/walterrenner/4d8863043404bec01d0f](https://gist.github.com/walterrenner/4d8863043404bec01d0f) for further instructions.
 
 Since version 0.0.14 3bot depends on [django-background-task](https://github.com/lilspikey/django-background-task) for asynchronous workflow performance. Visit the Repository to see how to set up django-background-task.

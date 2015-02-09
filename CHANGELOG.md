@@ -28,7 +28,7 @@
 
 ### 0.0.16 - 31.10.2014
 
-*   Added @python_2_unicode_compatible for Python 2 - Python 3 compatibility
+*   Added `@python_2_unicode_compatible` for Python 2 - Python 3 compatibility
 *   Fix wrong install url in worker-manual
 *   Set correct urlname for workflow reorder view
 *   Improved admin sites
