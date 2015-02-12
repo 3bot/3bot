@@ -79,7 +79,7 @@ def run_workflow(workflow_log_id):
             # loop key, value pairs and look if this output needs to be set as input
             for key, value in inp[str(current.id)]['string'].iteritems():
                 if value == 'output_%s' % str(workflow_task.id):
-                    workflow_log.inputs[str(current.id)]['string'][key] = output['output']
+                    workflow_log.inputs[str(current.id)]['string'][key] = output['stdout']
 
         if 'exit_code' not in output or output['exit_code'] is not workflow_log.SUCCESS:
             workflow_log.exit_code = workflow_log.ERROR

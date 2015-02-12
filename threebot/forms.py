@@ -1,11 +1,10 @@
 from django import forms
 from django.forms.models import modelformset_factory
-from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from organizations.models import Organization
 from organizations.utils import create_organization
 
-from threebot.utils import get_possible_parameters, get_accessible_worker, get_curr_org
+from threebot.utils import get_possible_parameters, get_possible_worker, get_curr_org
 from threebot.utils import get_preset_param, get_preset_worker, get_possible_owners, get_possible_lists, get_preset_list
 from threebot.models import Worker
 from threebot.models import Workflow
@@ -171,25 +170,23 @@ class WorkerSelectForm(forms.Form):
 
         super(WorkerSelectForm, self).__init__(*args, **kwargs)
 
-        accessible_worker = [('', '--Choose a worker--')]
-        accessible_worker += get_accessible_worker(request, workflow)
-        accessible_worker = Worker.objects.all().values_list('id', 'title')
+        possible_workers = get_possible_worker(request, as_list=True)
         preset_worker_id = get_preset_worker(request, workflow, id=True)
 
         self.fields['worker'] = forms.MultipleChoiceField(
             required=True,
             label="Worker",
-            choices=accessible_worker,
+            choices=possible_workers,
             initial=preset_worker_id,
             widget=forms.SelectMultiple(attrs={'class': 'form-control', }),
-            )
+        )
         self.fields['worker'].empty_label = None
 
         # workaround for displaying a message to the user
         # if no worker is acessible while initializing the form
-        if len(accessible_worker) <= 0:
+        if len(possible_workers) <= 0:
             self.cleaned_data = {}
-            msg = "There is no accessible Worker. Please cofigure a Worker first."
+            msg = "No Worker found. Please cofigure a Worker first."
             self.add_error('worker', msg)
 
     def clean(self):
