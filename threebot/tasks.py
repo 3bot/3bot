@@ -101,6 +101,7 @@ def run_workflow(workflow_log_id):
 
 
 def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
+    # TODO check if we used REQUEST_TIMEOUT somewhere in a caller and remove
     request = threebot_crypto.encrypt(request, secret_key=conn.secret_key)
     retries_left = REQUEST_RETRIES
     response = {}
@@ -111,7 +112,7 @@ def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
 
         expect_reply = True
         while expect_reply:
-            socks = dict(conn.poll.poll(REQUEST_TIMEOUT))
+            socks = dict(conn.poll.poll(-1))
 
             if socks.get(conn.client) == zmq.POLLIN:
                 #response = conn.client.recv_json()
