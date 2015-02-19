@@ -123,13 +123,12 @@ def get_accessible_worker(request, workflow):
 
 
 @login_required
-def get_preset_worker(request, workflow, id=False):
-    # TODO: do not user reserved reyword 'id' user 'id_only'
+def get_preset_worker(request, workflow, id_only=False):
     # search the workflowpreset
     wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
     try:
         worker_id = wf_preset.defaults["worker_id"]
-        if id:
+        if id_only:
             return str(worker_id)
         if type(worker_id) is list:
             return Worker.objects.filter(id__in=worker_id)
