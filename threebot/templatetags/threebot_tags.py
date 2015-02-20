@@ -3,8 +3,8 @@ from urllib import quote_plus
 
 
 from threebot import __version__
-from threebot.utils import get_my_orgs, get_preset_worker, has_admin_permission
-from threebot.models import WorkflowPreset
+from threebot.utils import get_my_orgs, get_preset_worker, has_admin_permission, render_template
+from threebot.models import WorkflowPreset, WorkflowTask
 
 register = template.Library()
 
@@ -47,6 +47,14 @@ def get_presets_for(request, workflow):
 
 
 @register.assignment_tag
+def get_number_of_tasks(workflow):
+    if workflow is None:
+        return None
+
+    return WorkflowTask.objects.filter(workflow=workflow).count()
+
+
+@register.assignment_tag
 def get_threebot_version():
     return __version__
 
@@ -64,3 +72,17 @@ def lsplit(s, splitter):
 @register.filter
 def rsplit(s, splitter):
     return s.split(splitter)[-1]
+
+
+@register.assignment_tag
+def split_lines(string):
+    """
+    Takes a string, returns list if stings splitted by newline
+    """
+    return string.split('\n')
+
+
+@register.assignment_tag
+def get_script_for_wf(workflow_log, wf_task):
+    workflow_task = WorkflowTask.objects.get(id=wf_task)
+    return render_template(workflow_log, workflow_task)

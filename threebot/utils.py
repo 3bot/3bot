@@ -103,16 +103,16 @@ def get_preset_param(request, workflow_task, name, data_type="string"):
 
 
 @login_required
-def get_possible_worker(request):
+def get_possible_worker(request, as_list=False):
     orgs = get_my_orgs(request)
+    if as_list:
+        return Worker.objects.filter(owner__in=orgs).values_list('id', 'title')
     return Worker.objects.filter(owner__in=orgs)
 
 
 def get_accessible_worker(request, workflow):
-    orgs = get_my_orgs(request)
     possible_worker = get_possible_worker(request)
-    possible_worker = possible_worker.filter(owner__in=orgs)
-    filtered = (worker for worker in possible_worker if worker.is_accessible)
+    filtered = [worker for worker in possible_worker if worker.is_accessible]
 
     worker = []
 
@@ -123,13 +123,13 @@ def get_accessible_worker(request, workflow):
 
 
 @login_required
-def get_preset_worker(request, workflow, id=False):
+def get_preset_worker(request, workflow, id_only=False):
     # search the workflowpreset
     wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
     try:
         worker_id = wf_preset.defaults["worker_id"]
-        if id:
-            return worker_id
+        if id_only:
+            return str(worker_id)
         if type(worker_id) is list:
             return Worker.objects.filter(id__in=worker_id)
         else:

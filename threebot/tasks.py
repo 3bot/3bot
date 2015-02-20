@@ -79,7 +79,7 @@ def run_workflow(workflow_log_id):
             # loop key, value pairs and look if this output needs to be set as input
             for key, value in inp[str(current.id)]['string'].iteritems():
                 if value == 'output_%s' % str(workflow_task.id):
-                    workflow_log.inputs[str(current.id)]['string'][key] = output['output']
+                    workflow_log.inputs[str(current.id)]['string'][key] = output['stdout']
 
         if 'exit_code' not in output or output['exit_code'] is not workflow_log.SUCCESS:
             workflow_log.exit_code = workflow_log.ERROR
@@ -101,6 +101,7 @@ def run_workflow(workflow_log_id):
 
 
 def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
+    # TODO check if we used REQUEST_TIMEOUT somewhere in a caller and remove
     request = threebot_crypto.encrypt(request, secret_key=conn.secret_key)
     retries_left = REQUEST_RETRIES
     response = {}
@@ -111,7 +112,7 @@ def send_script(request, conn, REQUEST_TIMEOUT=180000, REQUEST_RETRIES=1):
 
         expect_reply = True
         while expect_reply:
-            socks = dict(conn.poll.poll(REQUEST_TIMEOUT))
+            socks = dict(conn.poll.poll(-1))
 
             if socks.get(conn.client) == zmq.POLLIN:
                 #response = conn.client.recv_json()

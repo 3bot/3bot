@@ -277,6 +277,7 @@ class WorkflowPreset(models.Model):
 
     class Meta():
         ordering = ['date_modified', 'workflow', 'user', ]
+        unique_together = (('workflow', 'user',), )
         verbose_name = _("Workflow Preset")
         verbose_name_plural = _("Workflow Presets")
 

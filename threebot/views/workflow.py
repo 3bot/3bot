@@ -14,9 +14,23 @@ from threebot.models import WorkflowPreset
 from threebot.models import UserParameter, Parameter
 from threebot.models import OrganizationParameter, ParameterList
 from threebot.models import WorkflowLog
-from threebot.utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
-from threebot.forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
 from threebot.tasks import run_workflow
+from threebot.utils import (
+    order_workflow_tasks,
+    render_templates,
+    render_template,
+    get_my_orgs,
+    filter_workflow_log_history
+)
+from threebot.forms import (
+    TaskParameterForm,
+    WorkflowReorderForm,
+    WorkflowCreateForm,
+    WorkflowChangeForm,
+    WorkerSelectForm,
+    UserParameterCreateForm,
+    ParameterListSelectForm
+)
 
 
 @login_required

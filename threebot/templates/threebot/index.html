@@ -12,40 +12,70 @@ Configure, Build and Perform
 <div class="row">
     {% if my_logs %}
     <div class="col-sm-6">
-        <h3>My Log History</h3>
-        {% for log in my_logs %}
-        <p>
-            <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
-            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
-        </p>
-        {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">My Log History</h3>
+            </div>
+            <div class="panel-body">
+                Latest Workflows perfomed by you
+            </div>
+            <table class="table table-hover">
+                {% for log in my_logs %}
+                <tr>
+                    <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
+                    <td>{{ log.date_created|date:"d.m.y H:i"  }}</td>
+                    <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
+                    <td>{{ log.performed_by }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
     {% endif %}
 
     {% if team_logs %}
     <div class="col-sm-6">
-        <h3>Team Log History</h3>
-    	{% for log in team_logs %}
-        <p>
-            <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
-            <a href="{{ log.get_absolute_url }}">{{ log }}</a>
-    	</p>
-    	{% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Team Log History</h3>
+            </div>
+            <div class="panel-body">
+                Latest Workflows perfomed by your team members and you
+            </div>
+            <table class="table table-hover">
+                {% for log in team_logs %}
+                <tr>
+                    <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
+                    <td>{{ log.date_created|date:"d.m.y H:i"  }}</td>
+                    <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
+                    <td>{{ log.performed_by }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
     {% endif %}
-    
-
 </div>
 
 <div class="row">
     {% if counts %}
     <div class="col-sm-6">
-        <h3>Most performed Workflows</h3>
-        {% for wf in counts %}
-        <p>
-            <span class="label label-info">{{ wf.issue_count }}x</span> <a href="{{ wf.get_absolute_url }}">{{ wf.title }}</a>
-        </p>
-        {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Popular Workflows</h3>
+            </div>
+            <div class="panel-body">
+                Most performed Workflows
+            </div>
+            <table class="table table-hover">
+                {% for wf in counts %}
+                <tr>
+                    <td><span class="label label-info">{{ wf.issue_count }}x</span></td>
+                    <td><a href="{{ wf.get_absolute_url }}">{{ wf.title|truncatechars:50 }}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
     {% endif %}
 </div>
