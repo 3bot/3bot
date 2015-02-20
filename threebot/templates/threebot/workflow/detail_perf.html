@@ -22,7 +22,7 @@
       <p class="text-danger">{{ error }}</p>
       {% endfor %}
       {% endif %}
-    {{ field }}      
+    {{ field }}
     {% endfor %}
 
   <h3>Tasks</h3>
@@ -80,7 +80,7 @@
     </p>
     {% endfor %}
     <p>
-      <small><a href="{% url 'core_workflow_detail_digest' workflow.slug %}">View all</a></small>
+      <small><a href="{% url 'core_workflow_detail_digest' workflow.slug %}">View more</a></small>
     </p>
     {% else %}{# no logs #}
     <div class="alert alert-warning" role="alert">Sorry, No Logs found.</div>
