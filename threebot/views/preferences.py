@@ -1,8 +1,8 @@
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.core.exceptions import ObjectDoesNotExist
 
 from organizations.models import Organization, OrganizationUser
 
@@ -19,10 +19,11 @@ from threebot.utils import filter_workflow_log_history
 @login_required
 def user_profile(request, template='threebot/preferences/user/profile.html'):
     token = ""
+
     try:
         from rest_framework.authtoken.models import Token
         token = Token.objects.get(user=request.user)
-    except (ImportError, Token.DoesNotExist):
+    except (ImportError, ObjectDoesNotExist):
         pass
     return render_to_response(template, {'request': request,
                                          'token': token,
@@ -35,8 +36,9 @@ def user_parameter(request, template='threebot/preferences/user/parameter.html')
 
     ParamFormset = make_user_parameter_formset(request.user)
     formset = ParamFormset(
-                 request.POST or None,
-                 queryset=user_parameter)
+        request.POST or None,
+        queryset=user_parameter,
+    )
 
     if formset.is_valid():
         formset.save()
@@ -104,14 +106,15 @@ def user_parameter_delete(request, id, template='threebot/preferences/user/param
 def organization_parameter(request, slug, template='threebot/preferences/organization/parameter.html'):
     organization = get_object_or_404(Organization, slug=slug)
 
-    #checks if we have access
+    # checks if we have access
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     organization_parameter = OrganizationParameter.objects.filter(owner=organization)
     ParamFormset = make_organization_parameter_formset(organization)
     formset = ParamFormset(
-                 request.POST or None,
-                 queryset=organization_parameter)
+        request.POST or None,
+        queryset=organization_parameter
+    )
 
     if formset.is_valid():
         formset.save()
@@ -129,15 +132,16 @@ def organization_parameter(request, slug, template='threebot/preferences/organiz
 def organization_parameter_list(request, slug, list_id, template='threebot/preferences/organization/parameter_list.html'):
     organization = get_object_or_404(Organization, slug=slug)
 
-    #checks if we have access
+    # checks if we have access
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     p_list = ParameterList.objects.get(id=list_id)
     organization_parameter = p_list.parameters.all()
     ParamFormset = make_organization_parameter_formset(organization)
     formset = ParamFormset(
-                 request.POST or None,
-                 queryset=organization_parameter)
+        request.POST or None,
+        queryset=organization_parameter
+    )
 
     if formset.is_valid():
         parameter = formset.save()
@@ -166,7 +170,7 @@ def organization_parameter_list(request, slug, list_id, template='threebot/prefe
 def organization_parameter_detail(request, slug, id, template='threebot/preferences/user/parameter_detail.html'):
     organization = get_object_or_404(Organization, slug=slug)
 
-    #checks if we have access
+    # checks if we have access
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     organization_parameter = OrganizationParameter.objects.get(owner=organization, id=id)
@@ -186,7 +190,7 @@ def organization_parameter_detail(request, slug, id, template='threebot/preferen
 def organization_parameter_delete(request, slug, id, template='threebot/preferences/user/parameter_delete.html'):
     organization = get_object_or_404(Organization, slug=slug)
 
-    #checks if we have access
+    # checks if we have access
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     param = OrganizationParameter.objects.get(owner=organization, id=id)
@@ -208,7 +212,7 @@ def organitazion_activity(request, slug, template='threebot/preferences/organiza
     organization = get_object_or_404(Organization, slug=slug)
     organizations = [].append(organization)
 
-    #checks if we have access
+    # checks if we have access
     get_object_or_404(OrganizationUser, organization=organization, user=request.user, is_admin=True)
 
     logs = filter_workflow_log_history(teams=organizations, quantity=20)
