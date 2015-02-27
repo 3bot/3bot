@@ -1,5 +1,7 @@
-jsonfield
+django==1.7.5
 django-sekizai
 django-background-task
+django-ar-organizations
+jsonfield
 pyzmq
 threebot_crypto
