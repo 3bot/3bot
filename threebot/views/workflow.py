@@ -347,10 +347,15 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
     except Exception, e:
         templates = None
 
+    try:
+        outputs = sorted(workflow_log.outputs.iteritems())
+    except AttributeError:
+        outputs = None
+
     return render_to_response(template, {'request': request,
                                          'workflow': workflow,
                                          'workflow_log': workflow_log,
-                                         'outputs': sorted(workflow_log.outputs.iteritems()),
+                                         'outputs': outputs,
                                          'templates': templates,
                                         }, context_instance=RequestContext(request))
 
