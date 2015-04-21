@@ -20,7 +20,9 @@ from organizations.models import Organization
 from jsonfield import JSONField
 
 
-VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of letters, numbers, and underscores. Python Keywords are not allowed."
+VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of \
+    letters, numbers, and underscores. Python Keywords are not allowed."
+
 RESERVED_IDENTIFIERS = ['log', 'payload']
 
 

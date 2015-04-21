@@ -2,7 +2,7 @@
 {% load sekizai_tags %}
 {% load threebot_tags %}
 
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>3bot - {% block doctitle %}{% endblock %}</title>
@@ -13,20 +13,20 @@
 
     <link rel="shortcut icon" href="{% static "threebot/img/logo_152.png" %}" type="image/png" />
     <link rel="apple-touch-icon" sizes="128x128" href="{% static "threebot/img/logo_128.png" %}">
-    
+
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static "threebot/css/bootstrap.css" %}">
-      
+
     <!-- Custom styles for 3bot -->
     <link rel="stylesheet" href="{% static "threebot/css/3bot.css" %}">
-    
+
     <!-- Additional styles -->
     {% render_block "css" %}
     </head>
 
   <body>
-    
-	
+
+
   	{% block body %} {% endblock %}
 
     <!-- Bootstrap core Scripts -->
@@ -37,7 +37,7 @@
 
     <!-- Additional Scripts -->
     {% render_block "js" %}
-     
+
     {% csrf_token %}
     <script type="text/javascript">
       $(document).ready(function(){
