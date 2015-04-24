@@ -29,7 +29,7 @@ all Tasks
   	<tr>
       <th></th>
       <th class="hidden-xs hidden-sm">Description</th>
-      <th class="hidden-xs">Type</th>            
+      <th class="hidden-xs">Type</th>
       <th>Readonly</th>
       <th>Built-In</th>
       <th>Team</th>
@@ -41,7 +41,7 @@ all Tasks
     	<tr id="{{ task.id }}">
     		<td>
           {% if not task.is_builtin and not task.is_readonly %}
-            <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>            
+            <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
           {% elif not task.is_builtin and task.is_readonly and task.owner|can_be_administarated_by:request.user %}
             <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
           {% else %}
@@ -74,7 +74,7 @@ all Tasks
         <td>
           <div class="dropdown">
             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-              <span class="glyphicon glyphicon-cog"></span> 
+              <span class="glyphicon glyphicon-cog"></span>
               <span class="caret"></span>
             </button>
             {% include 'threebot/task/_task_actions_menu.html' %}

@@ -19,7 +19,7 @@ Workflow - {{ workflow }}
       {% get_last_worker_for request workflow as workers %}
       </li><strong>Last performed on:</strong>
       {% for worker in workers %}
-      <a href="{{ worker.get_absolute_url }}">{{ worker }}</a>, 
+      <a href="{{ worker.get_absolute_url }}">{{ worker }}</a>,
       {% endfor %}
       </li>
       <li class="hidden-xs"><strong>Description:</strong> {{ workflow.desc|truncatechars:75 }}</li>
@@ -32,7 +32,7 @@ Workflow - {{ workflow }}
     <ul class="nav nav-tabs" role="tablist">
       {% url 'core_workflow_detail' workflow.slug as core_workflow_detail_url %}
       <li {% if request.path == core_workflow_detail_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_url }}">Perform</a></li>
-      
+
       {% url 'core_workflow_detail_with_list' workflow.slug as core_workflow_detail_with_list_url %}
       <li {% if request.path == core_workflow_detail_with_list_url %}class="active"{% endif %}><a href="{{ core_workflow_detail_with_list_url }}">Perform with List</a></li>
 
