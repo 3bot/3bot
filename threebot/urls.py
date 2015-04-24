@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url, include
 from organizations.backends import invitation_backend
 
 
-urlpatterns = patterns('threebot.views',
+urlpatterns = patterns(
+    'threebot.views',
     url(r'^worker/add/$', view='worker.create', name='core_worker_create'),
     url(r'^worker/(?P<slug>[-\w]+)/delete/$', view='worker.delete', name='core_worker_delete'),
     url(r'^worker/(?P<slug>[-\w]+)/manual/$', view='worker.detail_manual', name='core_worker_detail_manual'),
@@ -25,16 +26,15 @@ urlpatterns = patterns('threebot.views',
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/render/$', view='workflow.log_detail_render', name='core_workflow_log_detail_render'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/$', view='workflow.log_detail', name='core_workflow_log_detail'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/replay/$', view='workflow.replay', name='core_workflow_replay'),
-
-
     url(r'^workflow/(?P<slug>[-\w]+)/delete/$', view='workflow.delete', name='core_workflow_delete'),
     url(r'^workflow/(?P<slug>[-\w]+)/digest/$', view='workflow.detail_digest', name='core_workflow_detail_digest'),
     url(r'^workflow/(?P<slug>[-\w]+)/reorder/$', view='workflow.detail_reorder', name='core_workflow_detail_reorder'),
     url(r'^workflow/(?P<slug>[-\w]+)/edit/$', view='workflow.detail_edit', name='core_workflow_detail_edit'),
     url(r'^workflow/(?P<slug>[-\w]+)/with-list/$', view='workflow.detail_perf_with_list', name='core_workflow_detail_with_list'),
     url(r'^workflow/(?P<slug>[-\w]+)/$', view='workflow.detail_perf', name='core_workflow_detail'),
-
     url(r'^workflow/$', view='workflow.list', name='core_workflow_list'),
+
+    url(r'^log/(?P<id>[-\w]+)/$', view='workflow.redirect_to_log', ),
 
     url(r'^user/parameter/(?P<id>[-\w]+)/delete/$', view='preferences.user_parameter_delete', name='core_user_parameter_delete'),
     url(r'^user/parameter/(?P<id>[-\w]+)/$', view='preferences.user_parameter_detail', name='core_user_parameter_detail'),

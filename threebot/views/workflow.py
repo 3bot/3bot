@@ -394,3 +394,12 @@ def replay(request, slug, id):
 
     run_workflow(new_log.id)
     return redirect('core_workflow_log_detail', slug=slug, id=new_log.id)
+
+
+@login_required
+def redirect_to_log(request, id):
+    """
+    Acts like a proxy that redirects a WorkflowLog.id to 'core_workflow_log_detail'
+    """
+    workflow_log = get_object_or_404(WorkflowLog, id=id)
+    return redirect('core_workflow_log_detail', slug=workflow_log.workflow.slug, id=workflow_log.id)
