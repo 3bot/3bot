@@ -171,13 +171,13 @@ class WorkerSelectForm(forms.Form):
         super(WorkerSelectForm, self).__init__(*args, **kwargs)
 
         possible_workers = get_possible_worker(request, as_list=True)
-        preset_worker_id = get_preset_worker(request, workflow, id_only=True)
+        preset_worker = get_preset_worker(request, workflow, flat=True)
 
         self.fields['worker'] = forms.MultipleChoiceField(
             required=True,
             label="Worker",
             choices=possible_workers,
-            initial=preset_worker_id,
+            initial=preset_worker,
             widget=forms.SelectMultiple(attrs={'class': 'form-control', }),
         )
         self.fields['worker'].empty_label = None
