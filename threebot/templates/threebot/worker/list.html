@@ -8,58 +8,52 @@ all Worker
 
 {% block content %}
 <h2>
-	Workers
-	<span class="pull-right">
-		<a href="{% url 'core_worker_create' %}" type="button" class="btn btn-primary btn-sm">Add Worker</a>
-	</span>
+  Workers
+  <span class="pull-right">
+    <a href="{% url 'core_worker_create' %}" type="button" class="btn btn-primary btn-sm">Add Worker</a>
+  </span>
 </h2>
 <p>
-	<small>Workers are mashines the workflows are performed on. Select the Worker you want to edit.</small>
+  <small>Workers are mashines the workflows are performed on. Select the Worker you want to edit.</small>
 </p>
 
 {% if workers %}
 <table class="table table-hover">
-	<thead>
-      	<tr>
+  <thead>
+        <tr>
             <th></th>
             <th class="hidden-xs">IP</th>
             <th class="hidden-xs">Port</th>
-            <th>muted</th>
-            <th>accessible</th>
+            <th>Availability</th>
             <th>Team</th>
             <th></th>
-      	</tr>
+        </tr>
     </thead>
-	{% for worker in workers %}
-	<tr>
-		<td><a href="{{ worker.get_absolute_url }}">{{ worker.title }}</a></td>
-		<td class="hidden-xs"><small>{{ worker.ip }}</small></td>
-		<td class="hidden-xs"><small>{{ worker.port }}</small></td>
+  {% for worker in workers %}
+  <tr>
+    <td><a href="{{ worker.get_absolute_url }}">{{ worker.title }}</a></td>
+    <td class="hidden-xs"><small>{{ worker.ip }}</small></td>
+    <td class="hidden-xs"><small>{{ worker.port }}</small></td>
         <td>
             {% if worker.muted %}
-            <span class="glyphicon glyphicon-ok-sign"></span>
+              <span class="glyphicon glyphicon-pause" style="color: blue;"></span>
+            {% elif worker.is_accessible %}
+              <span class="glyphicon glyphicon-ok-sign" style="color: green;"></span>
             {% else %}
-            <span class="glyphicon glyphicon-minus-sign"></span>
+              <span class="glyphicon glyphicon-minus-sign" style="color: red;"></span>
             {% endif %}
         </td>
-		<td>
-			{% if worker.is_accessible %}
-			<span class="glyphicon glyphicon-ok-sign"></span>
-			{% else %}
-			<span class="glyphicon glyphicon-minus-sign"></span>
-			{% endif %}
-		</td>
         <td>{{ worker.owner }}</td>
         <td>
           <div class="dropdown">
             <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-              <span class="glyphicon glyphicon-cog"></span> 
+              <span class="glyphicon glyphicon-cog"></span>
               <span class="caret"></span>
             </button>
               {% include 'threebot/worker/_worker_actions_menu.html' %}
           </div>
         </td>
-	</tr>
+  </tr>
 {% endfor %}
 </table>
 

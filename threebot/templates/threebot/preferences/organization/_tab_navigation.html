@@ -3,12 +3,12 @@
 <ul class="nav nav-tabs" role="tablist" style="margin: 0 0 15px;">
   {% url 'organization_detail' organization.pk as organization_detail_url %}
   <li {% if organization_detail_url == request.path %}class="active"{% endif %}><a href="{{ organization_detail_url }}">Members</a></li>
-  
+
   {% if organization|can_be_administarated_by:request.user %}
   {% url 'organization_edit' organization.pk as organization_edit_url %}
   <li {% if organization_edit_url == request.path %}class="active"{% endif %}><a href="{{ organization_edit_url }}">Edit</a>
-  
-  {% url 'core_organization_parameter' slug=organization.slug as core_organization_parameter_url %}  
+
+  {% url 'core_organization_parameter' slug=organization.slug as core_organization_parameter_url %}
   <li {% if core_organization_parameter_url == request.path %}class="active"{% endif %}><a href="{{ core_organization_parameter_url }}">Parameter</a></li>
 
   {% url 'core_organization_activity' slug=organization.slug as core_organization_activity_url %}

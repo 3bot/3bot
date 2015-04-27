@@ -123,20 +123,27 @@ def get_accessible_worker(request, workflow):
 
 
 @login_required
-def get_preset_worker(request, workflow, id_only=False):
-    # search the workflowpreset
+def get_preset_worker(request, workflow, flat=False):
+    """
+    returns a Worker queryset or a list of ids (flat = True),
+    which a workflow recently was performed on by request.user.
+    """
+    # find or create the workflowpreset
     wf_preset, created = WorkflowPreset.objects.get_or_create(user=request.user, workflow=workflow)
+
     try:
-        worker_id = wf_preset.defaults["worker_id"]
-        if id_only:
-            return str(worker_id)
-        if type(worker_id) is list:
-            return Worker.objects.filter(id__in=worker_id)
-        else:
-            return Worker.objects.filter(id=worker_id)
-    except (KeyError, Worker.DoesNotExist):
-        pass
-    return None
+        worker_ids = wf_preset.defaults["worker_id"]
+    except (KeyError):
+        worker_ids = []
+
+    # backwards compatibility
+    if isinstance(worker_ids, int) or isinstance(worker_ids, str):
+        worker_ids = [worker_ids]
+
+    if flat:
+        return worker_ids
+
+    return Worker.objects.filter(id__in=worker_ids)
 
 
 @login_required

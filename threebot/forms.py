@@ -128,7 +128,7 @@ class ParameterListSelectForm(forms.Form):
             choices=possible_lists,
             initial=preset_list_id,
             widget=forms.Select(attrs={'class': 'form-control', }),
-            )
+        )
         self.fields['parameter_list'].empty_label = None
 
     def clean_parameter_list(self, *args, **kwargs):
@@ -140,7 +140,7 @@ class ParameterListSelectForm(forms.Form):
         all_required_inputs = []
         for wf_task in workflow_tasks:
             for name, data_type in wf_task.task.required_inputs.iteritems():
-                if not name in all_required_inputs:
+                if name not in all_required_inputs:
                     all_required_inputs.append((name, data_type))
 
         # make a list of ::all_parameters from the list, with name and data type
@@ -171,13 +171,13 @@ class WorkerSelectForm(forms.Form):
         super(WorkerSelectForm, self).__init__(*args, **kwargs)
 
         possible_workers = get_possible_worker(request, as_list=True)
-        preset_worker_id = get_preset_worker(request, workflow, id_only=True)
+        preset_worker = get_preset_worker(request, workflow, flat=True)
 
         self.fields['worker'] = forms.MultipleChoiceField(
             required=True,
             label="Worker",
             choices=possible_workers,
-            initial=preset_worker_id,
+            initial=preset_worker,
             widget=forms.SelectMultiple(attrs={'class': 'form-control', }),
         )
         self.fields['worker'].empty_label = None
@@ -190,11 +190,16 @@ class WorkerSelectForm(forms.Form):
             self.add_error('worker', msg)
 
     def clean(self):
-        worker_ids = self.cleaned_data['worker']
+        cleaned_data = super(WorkerSelectForm, self).clean()
+        worker_ids = cleaned_data.get('worker')
         workers = Worker.objects.filter(id__in=worker_ids)
         for worker in workers:
             if not worker.is_accessible:
                 raise forms.ValidationError("worker not aceccible")
+        # Always return the full collection of cleaned data.
+        # This has changed in django 1.7 but raises errors in django <1.7
+        # We want to support both, so we return cleanded_data
+        return cleaned_data
 
 
 class WorkerForm(forms.ModelForm):

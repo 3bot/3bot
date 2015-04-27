@@ -37,7 +37,7 @@ Logged {{ workflow }}
 <h4 style="padding-top:20px;"><span class="glyphicon workflow-{% if output.exit_code == 0 %}Success{% else %}Error{% endif %}"></span> {{ wf_task|rsplit:"_" }}</h4>
 <ul class="nav nav-tabs" role="tablist">
   <li role="presentation" class="active"><a href="#{{ wf_task|lsplit:"_" }}_stdout" role="tab" data-toggle="tab">Console Output</a></li>
-  <li role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_stderr" role="tab" data-toggle="tab">Error Stream</a></li>
+  <li role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_stderr" role="tab" data-toggle="tab">{% if output.stderr %}<span class="glyphicon glyphicon-flash"></span>&nbsp{% endif %}Error Stream</a></li>
   <li role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_html" role="tab" data-toggle="tab">Rendered HTML</a></li>
   <li class="pull-right" title="the renderes script as send to the workers" role="presentation"><a href="#{{ wf_task|lsplit:"_" }}_script" role="tab" data-toggle="tab">Script</a></li>
 </ul>
@@ -91,6 +91,8 @@ if (log_exit_code == '2') {
           window.location.reload();
         }, 5000);
 }
+
+
 
 {% for wf_task, output in outputs %}
 $('#{{ wf_task|lsplit:"_" }}_stdout a').click(function (e) {

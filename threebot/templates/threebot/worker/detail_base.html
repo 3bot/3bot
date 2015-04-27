@@ -15,8 +15,8 @@ Worker - {{ worker.title }}
       <li><strong>Team:</strong> {{ worker.owner }}</li>
       <li><strong>IP-Address:</strong> {{ worker.ip }}</li>
       <li><strong>Port:</strong> {{ worker.port }}</li>
-      <li><strong>muted:</strong> {% if worker.muted %}<span class="glyphicon glyphicon-ok-sign"></span>{% else %}<span class="glyphicon glyphicon-minus-sign"></span>{% endif %}</li>
-      <li><strong>accessible:</strong> {% if worker.is_accessible %}<span class="glyphicon glyphicon-ok-sign"></span>{% else %}<span class="glyphicon glyphicon-minus-sign"></span>{% endif %}</li>
+      <li><strong>Availability:</strong> {% if worker.muted %}<span class="glyphicon glyphicon-pause" style="color: blue;"></span>{% elif worker.is_accessible %}<span class="glyphicon glyphicon-ok-sign" style="color: green;"></span>{% else %}<span class="glyphicon glyphicon-minus-sign" style="color: red;"></span>{% endif %}
+      </li>
     </ul>
   </div>
 </div>
@@ -26,7 +26,7 @@ Worker - {{ worker.title }}
     <ul class="nav nav-tabs" role="tablist">
       {% url 'core_worker_detail' worker.slug as core_worker_detail_url %}
       <li {% if request.path == core_worker_detail_url %}class="active"{% endif %}><a href="{{ core_worker_detail_url }}">Edit</a></li>
-      
+
       {% url 'core_worker_detail_digest' worker.slug as core_worker_detail_digest_url %}
       <li {% if request.path == core_worker_detail_digest_url %}class="active"{% endif %}><a href="{{ core_worker_detail_digest_url }}">Digest</a></li>
 
