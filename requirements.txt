@@ -1,6 +1,6 @@
-django==1.7.5
+django>=1.7.5
 django-sekizai
-django-background-task
+django-background-tasks
 django-ar-organizations
 jsonfield
 pyzmq
