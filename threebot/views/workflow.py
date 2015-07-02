@@ -66,6 +66,12 @@ def create(request, template='threebot/workflow/create.html'):
 
 
 @login_required
+def workflow_permalink(request, id):
+    workflow = get_object_or_404(Workflow, id=id)
+    return redirect('core_workflow_detail', slug=workflow.slug)
+
+
+@login_required
 def detail_digest(request, slug, template='threebot/workflow/detail_digest.html'):
     orgs = get_my_orgs(request)
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
@@ -397,7 +403,7 @@ def replay(request, slug, id):
 
 
 @login_required
-def redirect_to_log(request, id):
+def workflow_log_permalink(request, id):
     """
     Acts like a proxy that redirects a WorkflowLog.id to 'core_workflow_log_detail'
     """

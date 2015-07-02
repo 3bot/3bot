@@ -24,6 +24,13 @@ def list(request, template='threebot/task/list.html'):
 
 
 @login_required
+def task_permalink(request, id):
+    orgs = get_my_orgs(request)
+    task = get_object_or_404(Task, owner__in=orgs, id=id)
+    return redirect('core_task_detail', slug=task.slug)
+
+
+@login_required
 def detail_edit(request, slug, template='threebot/task/detail_edit.html'):
     orgs = get_my_orgs(request)
     task = get_object_or_404(Task, owner__in=orgs, slug=slug, is_builtin=False)

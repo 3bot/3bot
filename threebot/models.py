@@ -6,7 +6,7 @@ import random
 
 from django.db import IntegrityError
 from django.db import models
-
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.core.validators import validate_email
@@ -96,6 +96,9 @@ class Worker(models.Model):
     def get_absolute_url(self):
         return ('core_worker_detail', (), {
             'slug': self.slug})
+
+    def permalink(self):
+        return reverse('core_worker_permalink', kwargs={'id': self.id})
 
     def __str__(self):
         return self.title
@@ -213,6 +216,9 @@ class Task(models.Model):
         return ('core_task_detail', (), {
             'slug': self.slug})
 
+    def permalink(self):
+        return reverse('core_task_permalink', kwargs={'id': self.id})
+
     def __str__(self):
         return self.title or self.desc or str(self.pk)
 
@@ -263,6 +269,9 @@ class Workflow(models.Model):
     def get_absolute_url(self):
         return ('core_workflow_detail', (), {
             'slug': self.slug})
+
+    def permalink(self):
+        return reverse('core_workflow_permalink', kwargs={'id': self.id})
 
     def __str__(self):
         return self.title or self.desc or str(self.pk)
@@ -391,6 +400,9 @@ class WorkflowLog(models.Model):
         return ('core_workflow_log_detail', (), {
             'slug': self.workflow.slug,
             'id': self.id})
+
+    def permalink(self):
+        return reverse('core_workflow_log_permalink', kwargs={'id': self.id})
 
     def __str__(self):
         return "%s - %s logged %s" % (self.date_created.strftime('%d.%m.%y %H:%M'), str(self.performed_by), self.workflow.title, )

@@ -20,6 +20,13 @@ def list(request, template='threebot/worker/list.html'):
 
 
 @login_required
+def worker_permalink(request, id):
+    orgs = get_my_orgs(request)
+    worker = get_object_or_404(Worker, owner__in=orgs, id=id)
+    return redirect('core_worker_detail', slug=worker.slug)
+
+
+@login_required
 def detail_edit(request, slug, template='threebot/worker/detail_edit.html'):
     orgs = get_my_orgs(request)
     worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)

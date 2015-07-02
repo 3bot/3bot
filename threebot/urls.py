@@ -11,6 +11,7 @@ urlpatterns = patterns(
     url(r'^worker/(?P<slug>[-\w]+)/digest/$', view='worker.detail_digest', name='core_worker_detail_digest'),
     url(r'^worker/(?P<slug>[-\w]+)/$', view='worker.detail_edit', name='core_worker_detail'),
     url(r'^worker/$', view='worker.list', name='core_worker_list'),
+    url(r'^wk/(?P<id>[-\w]+)/$', view='worker.worker_permalink', name='core_worker_permalink'),
 
     url(r'^task/add/$', view='task.create', name='core_task_create'),
     url(r'^task/import/$', view='task.import_task', name='core_task_import'),
@@ -21,6 +22,7 @@ urlpatterns = patterns(
     url(r'^task/(?P<slug>[-\w]+)/digest/$', view='task.detail_digest', name='core_task_detail_digest'),
     url(r'^task/(?P<slug>[-\w]+)/$', view='task.detail_edit', name='core_task_detail'),
     url(r'^task/$', view='task.list', name='core_task_list'),
+    url(r'^t/(?P<id>[-\w]+)/$', view='task.task_permalink', name='core_task_permalink'),
 
     url(r'^workflow/add/$', view='workflow.create', name='core_workflow_create'),
     url(r'^workflow/(?P<slug>[-\w]+)/log/(?P<id>[-\w]+)/render/$', view='workflow.log_detail_render', name='core_workflow_log_detail_render'),
@@ -33,8 +35,8 @@ urlpatterns = patterns(
     url(r'^workflow/(?P<slug>[-\w]+)/with-list/$', view='workflow.detail_perf_with_list', name='core_workflow_detail_with_list'),
     url(r'^workflow/(?P<slug>[-\w]+)/$', view='workflow.detail_perf', name='core_workflow_detail'),
     url(r'^workflow/$', view='workflow.list', name='core_workflow_list'),
-
-    url(r'^log/(?P<id>[-\w]+)/$', view='workflow.redirect_to_log', ),
+    url(r'^wf/(?P<id>[-\w]+)/$', view='workflow.workflow_permalink', name='core_workflow_permalink'),
+    url(r'^log/(?P<id>[-\w]+)/$', view='workflow.workflow_log_permalink', name='core_workflow_log_permalink'),
 
     url(r'^user/parameter/(?P<id>[-\w]+)/delete/$', view='preferences.user_parameter_delete', name='core_user_parameter_delete'),
     url(r'^user/parameter/(?P<id>[-\w]+)/$', view='preferences.user_parameter_detail', name='core_user_parameter_detail'),
