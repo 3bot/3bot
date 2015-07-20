@@ -2,6 +2,7 @@ import zmq
 from copy import deepcopy
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 from threebot.utils import render_template, order_workflow_tasks, importCode
 from threebot.botconnection import BotConnection
 from threebot.models import WorkflowLog
@@ -52,6 +53,7 @@ def run_workflow(workflow_log_id):
 
     ordered_workflows = order_workflow_tasks(workflow_log.workflow)
 
+    workflow_log.date_started = timezone.now()
     for idx, workflow_task in enumerate(ordered_workflows):
         template = render_template(workflow_log, workflow_task)
 
@@ -88,6 +90,7 @@ def run_workflow(workflow_log_id):
 
     conn.close()
 
+    workflow_log.date_finished = timezone.now()
     workflow_log.outputs = outputs
     workflow_log.exit_code = workflow_log.SUCCESS
     workflow_log.save()
