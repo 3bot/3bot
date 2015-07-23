@@ -81,7 +81,7 @@ Start the development server and enjoy your fresh 3bot instance running under [h
 To use your new 3bot application you need to set up a worker. A worker is a computer program that runs as a background process on a machine. This could be a server, an embedded systems or your laptop. The worker execute the tasks of a workflow - they do perform.
 For testing purposes we suggest to set up your first worker on localhost. Therefor you first create new Worker at [http://127.0.0.1:8000/worker/add/](http://127.0.0.1:8000/worker/add/). Choose `127.0.0.1` as IP-Address, and `55556` as port. Save your new worker and head over to [https://github.com/3bot/3bot-worker/tree/develop#setupinstallation](https://github.com/3bot/3bot-worker/tree/develop#setupinstallation) for further instructions.
 
-Since version 0.0.14 3bot depends on [django-background-task](https://github.com/lilspikey/django-background-task) for asynchronous workflow performance. Visit the Repository to see how to set up django-background-task.
+Since version 0.0.14 3bot depends on [django-background-tasks](https://pypi.python.org/pypi/django-background-tasks) for asynchronous workflow performance. Visit the Repository to see how to set up django-background-task.
 
 
 #### Advanced Settings
