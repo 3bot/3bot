@@ -383,6 +383,8 @@ class WorkflowLog(models.Model):
 
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
     date_created = models.DateTimeField(auto_now_add=True, help_text='Date the workflow was performed')
+    date_started = models.DateTimeField(help_text='Date the workflow was performed', blank=True, null=True)
+    date_finished = models.DateTimeField(help_text='Date the workflow was performed', blank=True, null=True)
     exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=PENDING)
     performed_by = models.ForeignKey(User, help_text="The User who performed the Worfkflow")
     performed_on = models.ForeignKey(Worker, help_text="The Worker Worfkflow was performed on")

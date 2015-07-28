@@ -49,15 +49,20 @@ def get_curr_org(request):
 def get_my_orgs(request, an_user=None):
     if request is not None and an_user is None:
         an_user = request.user
-    orgs = Organization.objects.filter(users=an_user)
-    if not orgs:
-        default_org = Organization(slug='3bot', name="3bot")
-        default_org.save()
-        org_user = OrganizationUser(organization=default_org, user=an_user, is_admin=True)
+
+    default_org, created = Organization.objects.get_or_create(slug='3bot', name="3bot")
+
+    if not OrganizationUser(organization=default_org, user=an_user).exists():
+        # we create an OrganizationUser, so each user is member of our default_org
+        # if default_org was just created, we also mark this user as admin and create an OrganizationOwner
+        org_user = OrganizationUser(organization=default_org, user=an_user, is_admin=created)
         org_user.save()
-        org_owner = OrganizationOwner(organization=default_org, organization_user=org_user)
-        org_owner.save()
-        orgs = Organization.objects.filter(users=an_user)
+        if created:
+            org_owner = OrganizationOwner(organization=default_org, organization_user=org_user)
+            org_owner.save()
+
+    orgs = Organization.objects.filter(users=an_user)
+
     return orgs
 
 
