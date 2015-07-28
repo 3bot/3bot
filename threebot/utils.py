@@ -52,7 +52,7 @@ def get_my_orgs(request, an_user=None):
 
     default_org, created = Organization.objects.get_or_create(slug='3bot', name="3bot")
 
-    if not OrganizationUser(organization=default_org, user=an_user).exists():
+    if not OrganizationUser.objects.filter(organization=default_org, user=an_user).exists():
         # we create an OrganizationUser, so each user is member of our default_org
         # if default_org was just created, we also mark this user as admin and create an OrganizationOwner
         org_user = OrganizationUser(organization=default_org, user=an_user, is_admin=created)
