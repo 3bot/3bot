@@ -87,6 +87,8 @@ def run_workflow(workflow_log_id):
             workflow_log.exit_code = workflow_log.ERROR
             workflow_log.save()
             break
+        else:
+            workflow_log.exit_code = workflow_log.SUCCESS
 
     conn.close()
 
