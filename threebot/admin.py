@@ -45,6 +45,11 @@ class WorkflowLogAdmin(admin.ModelAdmin):
     list_display = ('workflow', 'date_created', 'exit_code', 'performed_by', )
     list_filter = ('exit_code',)
     search_fields = ['workflow__title', ]
+    actions = ['make_errored']
+
+    def make_failed(self, request, queryset):
+        queryset.update(exit_code=self.model.ERROR)
+    make_failed.short_description = "Mark selected logs as failed"
 
 
 class WorkflowTaskAdmin(admin.ModelAdmin):
