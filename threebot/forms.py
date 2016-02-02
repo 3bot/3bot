@@ -186,7 +186,7 @@ class WorkerSelectForm(forms.Form):
         # if no worker is acessible while initializing the form
         if len(possible_workers) <= 0:
             self.cleaned_data = {}
-            msg = "No Worker found. Please cofigure a Worker first."
+            msg = "No Worker found. Please configure a Worker first."
             self.add_error('worker', msg)
 
     def clean(self):
