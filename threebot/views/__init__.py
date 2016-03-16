@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
 from django.template import RequestContext
+from django.conf import settings
 
 from organizations.models import Organization
 
@@ -31,16 +32,18 @@ def chooseorg(request, template='threebot/chooseorg.html'):
 
 
 def user_login(request, template='threebot/login.html'):
-    if request.user.is_authenticated():
-        return redirect("/")
-
+    next = request.GET.get("next", getattr(settings, "LOGIN_REDIRECT_URL", "/"))
     auth_form = AuthenticationForm(None, request.POST or None)
 
-    nextpage = request.GET.get('next', '/')
-    # The form itself handles authentication and checking to make sure passowrd and such are supplied.
+    if request.user.is_authenticated():
+        # no need to login again, just redirect
+        return redirect(next)
+
     if auth_form.is_valid():
+        # The form itself handles authentication and checking to make sure passowrd and such are supplied.
+        next = request.POST.get("next", getattr(settings, "LOGIN_REDIRECT_URL", "/"))
         login(request, auth_form.get_user())
-        return HttpResponseRedirect(nextpage)
+        return HttpResponseRedirect(next)
 
     return render_to_response(template, {'request': request,
                                          'auth_form': auth_form,
