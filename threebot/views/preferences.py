@@ -53,7 +53,7 @@ def user_parameter(request, template='threebot/preferences/user/parameter.html')
 
 @login_required
 def user_activity(request, template='threebot/preferences/user/activity.html'):
-    logs = filter_workflow_log_history(user=request.user, quantity=20)
+    logs = filter_workflow_log_history(user=request.user, quantity=100)
     return render_to_response(template, {'request': request,
                                          'logs': logs
                                         }, context_instance=RequestContext(request))

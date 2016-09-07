@@ -12,21 +12,23 @@ Activity
 <div class="row">
   <div class="col-lg-8">
     <h3 id="log-history">Log History {% if logs %}(latest {{ logs|length }}){% endif %}</h3>
-    <div class="row">
-      <div class="col-lg-8">
-        {% if logs %}
-        {% for log in logs %}
-        <p>
-          <span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span>
-          <a href="{{ log.get_absolute_url }}">{{ log }}</a>
-        </p>
-        {% endfor %}
-        {% else %}{# no logs #}
+      {% if logs %}
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            {% for log in logs %}
+            <tr>
+              <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
+              <td title="{{ log.date_created|date:"d.m.y H:i"  }}">{{ log.date_created }}</td>
+              <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:35 }}</a></td>
+              <td><a href="{{ log.performed_on.get_absolute_url }}" class="label label-default">{{ log.performed_on|truncatechars:12 }}</a></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      {% else %}{# no logs #}
         <div class="alert alert-warning" role="alert">Sorry, No Logs found.</div>
-        {% endif %}
-      </div>
+      {% endif %}
     </div>
-  </div>
 </div>
 
 {% endblock %}
