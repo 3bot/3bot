@@ -1,7 +1,6 @@
 from django import template
 from urllib import quote_plus
 
-
 from threebot import __version__
 from threebot.utils import get_my_orgs, get_preset_worker, has_admin_permission, render_template
 from threebot.models import WorkflowPreset, WorkflowTask
