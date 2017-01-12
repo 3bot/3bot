@@ -59,13 +59,9 @@ def user_logout(request):
 def index(request, template='threebot/index.html'):
     orgs = get_my_orgs(request)
 
-    counts = Workflow.objects.filter(owner__in=orgs).annotate(issue_count=Count('workflowlog')).order_by('-issue_count')
-    counts = counts.filter(issue_count__gte=1)[:5]
-    team_logs = filter_workflow_log_history(teams=orgs, quantity=5)
-    my_logs = filter_workflow_log_history(teams=orgs, user=request.user, quantity=5)
-
+    team_logs = filter_workflow_log_history(teams=orgs, quantity=10)
+    my_logs = filter_workflow_log_history(teams=orgs, user=request.user, quantity=10)
     return render_to_response(template, {'request': request,
-                                         'counts': counts,
                                          'team_logs': team_logs,
                                          'my_logs': my_logs,
                                         }, context_instance=RequestContext(request))

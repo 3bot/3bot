@@ -14,19 +14,17 @@ logger = logging.getLogger('3bot')
 
 def filter_workflow_log_history(workflow=None, teams=None, exit_code=None, user=None, worker=None, quantity=None):
     """returns a queryset of workflow-logs filtered by given parameters"""
-    logs = WorkflowLog.objects.all()
+    _filter = {}
     if workflow:
-        logs = logs.filter(workflow=workflow)
+        _filter['workflow'] = workflow
     if teams:
-        logs = logs.filter(workflow__owner__in=teams)
+        _filter['workflow__owner__in'] = teams
     if user:
-        logs = logs.filter(performed_by=user)
+        _filter['performed_by'] = user
     if worker:
-        logs = logs.filter(performed_on=worker)
+        _filter['performed_on'] = worker
 
-    if quantity:
-        logs = logs[:quantity]
-
+    logs = WorkflowLog.objects.filter(**_filter).select_related('workflow', 'performed_by', 'performed_on')[:quantity]
     return logs
 
 
