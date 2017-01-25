@@ -14,7 +14,7 @@ from django.core.validators import validate_email
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
-from django.contrib.auth.models import User
+from django.conf import settings
 
 from organizations.models import Organization
 from jsonfield import JSONField
@@ -280,7 +280,7 @@ class Workflow(models.Model):
 @python_2_unicode_compatible
 class WorkflowPreset(models.Model):
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"))
-    user = models.ForeignKey(User, verbose_name=("User"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=("User"))
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -386,7 +386,7 @@ class WorkflowLog(models.Model):
     date_started = models.DateTimeField(help_text='Date the workflow was performed', blank=True, null=True)
     date_finished = models.DateTimeField(help_text='Date the workflow was performed', blank=True, null=True)
     exit_code = models.PositiveIntegerField(choices=EXIT_CODE_CHOICES, default=PENDING)
-    performed_by = models.ForeignKey(User, help_text="The User who performed the Worfkflow")
+    performed_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text="The User who performed the Worfkflow")
     performed_on = models.ForeignKey(Worker, help_text="The Worker Worfkflow was performed on")
 
     inputs = JSONField()
@@ -455,7 +455,7 @@ class Parameter(models.Model):
 
 @python_2_unicode_compatible
 class UserParameter(Parameter):
-    owner = models.ForeignKey(User, help_text="Parameter owner")
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, help_text="Parameter owner")
 
     class Meta():
         ordering = ['owner', 'data_type', ]
