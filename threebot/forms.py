@@ -191,7 +191,7 @@ class WorkerSelectForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(WorkerSelectForm, self).clean()
-        worker_ids = cleaned_data.get('worker')
+        worker_ids = cleaned_data.get('worker', [])
         workers = Worker.objects.filter(id__in=worker_ids)
         for worker in workers:
             if not worker.is_accessible:
