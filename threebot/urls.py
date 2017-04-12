@@ -59,4 +59,7 @@ urlpatterns = patterns(
     url(r'^logout/$', view='user_logout', name='auth_logout'),
     url(r'^orgswitcher/(?P<slug>[-\w]+)/$', view='orgswitcher'),
     url(r'^$', view='index', name='core_index'),
+
+    ### API ###
+    url(r'^workers/(?P<id>[-\w]+)/$', view='api.worker.detail', name='api_worker_detail'),
 )
