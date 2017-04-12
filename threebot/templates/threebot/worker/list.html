@@ -35,13 +35,7 @@ all Worker
     <td class="hidden-xs"><small>{{ worker.ip }}</small></td>
     <td class="hidden-xs"><small>{{ worker.port }}</small></td>
         <td>
-            {% if worker.muted %}
-              <span class="glyphicon glyphicon-pause" style="color: blue;"></span>
-            {% elif worker.is_accessible %}
-              <span class="glyphicon glyphicon-ok-sign" style="color: green;"></span>
-            {% else %}
-              <span class="glyphicon glyphicon-minus-sign" style="color: red;"></span>
-            {% endif %}
+            <span id="worker-status-{{ worker.id }}" class="worker-status"></span>
         </td>
         <td>{{ worker.owner }}</td>
         <td>

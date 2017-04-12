@@ -12,6 +12,7 @@ from django.core.exceptions import NON_FIELD_ERRORS
 from django.core.validators import validate_email
 
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.conf import settings
@@ -58,7 +59,7 @@ class Worker(models.Model):
         verbose_name = _("Worker")
         verbose_name_plural = _("Workers")
 
-    @property
+    @cached_property
     def is_accessible(self):
         if self.muted:
             return False

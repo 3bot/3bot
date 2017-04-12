@@ -113,18 +113,6 @@ def get_possible_worker(request, as_list=False):
     return Worker.objects.filter(owner__in=orgs)
 
 
-def get_accessible_worker(request, workflow):
-    possible_worker = get_possible_worker(request)
-    filtered = [worker for worker in possible_worker if worker.is_accessible]
-
-    worker = []
-
-    for wrk in filtered:
-        worker.append((wrk.id, wrk.title))
-
-    return tuple(worker)
-
-
 @login_required
 def get_preset_worker(request, workflow, flat=False):
     """

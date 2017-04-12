@@ -13,8 +13,8 @@ from threebot.models import ParameterList
 
 class WorkerAdmin(admin.ModelAdmin):
     model = Worker
-    readonly_fields = ('slug', 'is_accessible', )
-    list_display = ('title', 'slug', 'owner', 'ip', 'port', 'muted', 'is_accessible', )
+    readonly_fields = ('slug', )
+    list_display = ('title', 'slug', 'owner', 'ip', 'port', 'muted', )
     list_filter = ('muted', 'owner__name', )
     search_fields = ['owner__name', 'title', 'slug', ]
 
