@@ -37,6 +37,14 @@ def is_valid_identifier(identifier):
 @python_2_unicode_compatible
 class Worker(models.Model):
     ACCESS_REQUEST_TIMEOUT = 1
+    STATUS_OFFLINE = 0
+    STATUS_ONLINE = 1
+    STATUS_BUSY = 9
+    STATUS_CHOICES = (
+        (STATUS_OFFLINE, 'offline'),
+        (STATUS_ONLINE, 'online'),
+        (STATUS_BUSY, 'busy'),
+    )
 
     owner = models.ForeignKey(Organization, help_text="Worker owner")
     title = models.CharField(max_length=255)
@@ -59,6 +67,24 @@ class Worker(models.Model):
         ordering = ['owner', 'title']
         verbose_name = _("Worker")
         verbose_name_plural = _("Workers")
+
+    def get_status_display(self):
+        choices = dict(self.STATUS_CHOICES)
+        return choices[self.status]
+
+    @cached_property
+    def status(self):
+        if self.is_busy:
+            return self.STATUS_BUSY
+        if self.is_accessible:
+            return self.STATUS_ONLINE
+        else:
+            return self.STATUS_OFFLINE
+
+    @cached_property
+    def is_busy(self):
+        """Identifies is a Worfkflow is currently blocking this worker."""
+        WorkflowLog.objects.filter(exit_code=WorkflowLog.PENDING, performed_on=self).exists()
 
     @cached_property
     def is_accessible(self):
