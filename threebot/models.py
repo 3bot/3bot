@@ -84,7 +84,7 @@ class Worker(models.Model):
     @cached_property
     def is_busy(self):
         """Identifies is a Worfkflow is currently blocking this worker."""
-        WorkflowLog.objects.filter(exit_code=WorkflowLog.PENDING, performed_on=self).exists()
+        return WorkflowLog.objects.filter(exit_code=WorkflowLog.PENDING, performed_on=self).exists()
 
     @cached_property
     def is_accessible(self):
