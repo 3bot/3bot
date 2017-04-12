@@ -61,6 +61,6 @@ urlpatterns = patterns(
     url(r'^$', view='index', name='core_index'),
 
     ### API ###
-    url(r'^api/workers/(?P<id>[-\w]+)/$', view='api.worker.detail', name='api_worker_detail'),
-    url(r'^api/logs/(?P<id>[-\w]+)/$', view='api.log.detail', name='api_log_detail'),
+    url(r'^api/workers/(?P<id>[-\d]+)/$', view='api.worker.detail', name='api_worker_detail'),
+    url(r'^api/logs/(?P<id>[-\d]+)/$', view='api.log.detail', name='api_log_detail'),
 )

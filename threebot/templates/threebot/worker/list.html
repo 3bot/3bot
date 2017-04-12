@@ -24,7 +24,7 @@ all Worker
             <th></th>
             <th class="hidden-xs">IP</th>
             <th class="hidden-xs">Port</th>
-            <th>Availability</th>
+            <th>Status</th>
             <th>Team</th>
             <th></th>
         </tr>
@@ -35,7 +35,7 @@ all Worker
     <td class="hidden-xs"><small>{{ worker.ip }}</small></td>
     <td class="hidden-xs"><small>{{ worker.port }}</small></td>
         <td>
-            <span id="worker-status-{{ worker.id }}" class="worker-status"></span>
+            <span data-worker-id="{{ worker.id }}" class="worker-status"></span>
         </td>
         <td>{{ worker.owner }}</td>
         <td>
