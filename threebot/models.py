@@ -3,6 +3,7 @@ import keyword
 import hashlib
 import datetime
 import random
+import logging
 
 from django.db import IntegrityError
 from django.db import models
@@ -20,6 +21,8 @@ from django.conf import settings
 from organizations.models import Organization
 from jsonfield import JSONField
 
+
+logger = logging.getLogger('3bot')
 
 VALID_IDENTIFIER = "An identifier is a letter or underscore, followed by an unlimited string of \
     letters, numbers, and underscores. Python Keywords are not allowed."
@@ -80,8 +83,8 @@ class Worker(models.Model):
 
             if resp and resp['type'] == 'ACK':
                 return True
-        except:
-            pass
+        except Exception as e:
+            logger.error(e, exc_info=True)
         return False
 
     def save(self, *args, **kwargs):
