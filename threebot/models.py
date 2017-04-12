@@ -40,10 +40,12 @@ class Worker(models.Model):
     STATUS_OFFLINE = 0
     STATUS_ONLINE = 1
     STATUS_BUSY = 9
+    STATUS_MUTED = 10
     STATUS_CHOICES = (
         (STATUS_OFFLINE, 'offline'),
         (STATUS_ONLINE, 'online'),
         (STATUS_BUSY, 'busy'),
+        (STATUS_MUTED, 'muted'),
     )
 
     owner = models.ForeignKey(Organization, help_text="Worker owner")
@@ -74,6 +76,8 @@ class Worker(models.Model):
 
     @cached_property
     def status(self):
+        if self.muted:
+            return self.STATUS_MUTED
         if self.is_busy:
             return self.STATUS_BUSY
         if self.is_accessible:
