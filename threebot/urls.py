@@ -61,5 +61,5 @@ urlpatterns = patterns(
     url(r'^$', view='index', name='core_index'),
 
     ### API ###
-    url(r'^workers/(?P<id>[-\w]+)/$', view='api.worker.detail', name='api_worker_detail'),
+    url(r'^api/workers/(?P<id>[-\w]+)/$', view='api.worker.detail', name='api_worker_detail'),
 )
