@@ -5,13 +5,11 @@ import datetime
 import random
 import logging
 
-from django.db import IntegrityError
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.core.validators import validate_email
-
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
