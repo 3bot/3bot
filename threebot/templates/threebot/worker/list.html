@@ -56,4 +56,28 @@ all Worker
 <a href="{% url 'core_worker_create' %}" type="button" class="btn btn-primary btn-lg">Add Worker</a>
 {% endif %}
 
+{% addtoblock "js" %}
+<script>
+var status_templates = {};
+status_templates.muted = '<span class="glyphicon glyphicon-pause" style="color: blue;"></span>'
+status_templates.online = '<span class="glyphicon glyphicon-ok-sign" style="color: green;">'
+status_templates.offline = '<span class="glyphicon glyphicon-minus-sign" style="color: red;">'
+status_templates.busy = '<span class="glyphicon workflow-Pending"></span>'
+
+$( document ).ready(function() {
+  $( ".worker-status" ).each(function() {
+    var origin_element = this
+    var url = "/api/workers/" + $(origin_element).data("worker-id");
+    $.ajax({
+      type: "GET",
+      async: false,
+      url: url,
+      success: function(resp){
+        $(origin_element).html(status_templates[resp.status_display]);
+      }
+    });
+  });
+});
+</script>
+{% endaddtoblock %}
 {% endblock %}
