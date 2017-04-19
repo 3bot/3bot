@@ -1,63 +1,40 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block doctitle %}
 Configure, Build and Perform
 {% endblock %}
 
 {% block content %}
+<div class="row">
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#team_logs" data-toggle="tab">Team Log History</a></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane active" id="team_logs">
+        <table class="table table-hover">
+          {% for log in my_logs %}
+          <tr>
+            <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
+            <td title="{{ log.date_created|date:"d.m.y H:i"  }}">{{ log.date_created|naturaltime }}</td>
+            <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
+            <td><span class="label label-default">{{ log.performed_by }}</span></td>
+            <td><a href="{{ log.performed_on.get_absolute_url }}" class="label label-default">{{ log.performed_on|truncatechars:12 }}</a></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if not team_logs %}
 <h2>3bot</h2>
 <blockquote>
   <p>Configure, Build and Perform</p>
 </blockquote>
-<div class="row">
-    {% if my_logs %}
-    <div class="col-sm-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">My Log History</h3>
-            </div>
-            <div class="panel-body">
-                Latest Workflows perfomed by you
-            </div>
-            <table class="table table-hover">
-                {% for log in my_logs %}
-                <tr>
-                    <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
-                    <td>{{ log.date_created|date:"d.m.y H:i"  }}</td>
-                    <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
-                    <td>{{ log.performed_by }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-    {% endif %}
 
-    {% if team_logs %}
-    <div class="col-sm-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Team Log History</h3>
-            </div>
-            <div class="panel-body">
-                Latest Workflows perfomed by your team members and you
-            </div>
-            <table class="table table-hover">
-                {% for log in team_logs %}
-                <tr>
-                    <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
-                    <td>{{ log.date_created|date:"d.m.y H:i"  }}</td>
-                    <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
-                    <td>{{ log.performed_by }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-    {% endif %}
-</div>
-
-{% if not my_log and not team_logs %}
 <div class="row">
     <h3>Look like you just installed 3bot. Here is a small Todo list to get started</h3>
     <ol>
