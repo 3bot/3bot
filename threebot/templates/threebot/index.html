@@ -14,7 +14,7 @@ Configure, Build and Perform
     <div class="tab-content">
       <div class="tab-pane active" id="team_logs">
         <table class="table table-hover">
-          {% for log in my_logs %}
+          {% for log in team_logs %}
           <tr>
             <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
             <td title="{{ log.date_created|date:"d.m.y H:i"  }}">{{ log.date_created|naturaltime }}</td>
