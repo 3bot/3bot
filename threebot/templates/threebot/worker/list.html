@@ -70,7 +70,7 @@ $( document ).ready(function() {
     var url = "/api/workers/" + $(origin_element).data("worker-id");
     $.ajax({
       type: "GET",
-      async: false,
+      async: true,
       url: url,
       success: function(resp){
         $(origin_element).html(status_templates[resp.status_display]);
