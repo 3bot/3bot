@@ -60,7 +60,7 @@ def index(request, template='threebot/index.html'):
     org_ids = get_my_orgs(request).values_list('id', flat=True)
     team_logs = WorkflowLog.objects.filter(workflow__owner_id__in=org_ids).values(
         'id', 'exit_code', 'workflow__title', 'date_created',
-        'performed_by__username', 'performed_on__id' 'performed_on__title',
+        'performed_by__username', 'performed_on__id', 'performed_on__title',
     )
     return render_to_response(template, {'request': request,
                                          'team_logs': team_logs,
