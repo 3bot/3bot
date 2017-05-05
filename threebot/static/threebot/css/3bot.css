@@ -7,29 +7,29 @@ body {
   /* The html and body elements cannot have any padding or margin. */
 }
 
-.workflow-Success {
+.workflow-Success, .workflow-0 {
   color: green;
 }
 
-.workflow-Success::before {
+.workflow-Success::before, .workflow-0::before {
   content: "\e133";
   font-family: 'Glyphicons Halflings';
 }
 
-.workflow-Error {
+.workflow-Error, .workflow-1 {
   color: red;
 }
 
-.workflow-Error::before {
+.workflow-Error::before, .workflow-1::before {
   content: "\e134";
   font-family: 'Glyphicons Halflings';
 }
 
-.workflow-Pending {
+.workflow-Pending, .workflow-0 {
   color: orange;
 }
 
-.workflow-Pending::before {
+.workflow-Pending::before, .workflow-2::before {
   content: "\e031";
   font-family: 'Glyphicons Halflings';
   -webkit-transform-origin: 50% 50%;
@@ -105,7 +105,7 @@ code {
 }
 
 .action-result {
-    background-color: whiteSmoke; 
+    background-color: whiteSmoke;
     border-left: 5px solid #ccc;
     margin-bottom: 5px;
     padding: 5px;
