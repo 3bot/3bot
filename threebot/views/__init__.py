@@ -10,7 +10,7 @@ from django.conf import settings
 
 from organizations.models import Organization
 
-from threebot.models import Workflow
+from threebot.models import Workflow, WorkflowLog
 from threebot.utils import get_my_orgs, filter_workflow_log_history
 
 

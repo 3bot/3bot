@@ -62,7 +62,8 @@
                 <a href="/kb/">Knowledge Base</a>
               </li>
               <li>
-                Version: <a href="https://github.com/3bot/3bot/releases/">{% get_threebot_version as version %}{{ version }}</a>
+                {% get_threebot_version as version %}
+                <a href="https://github.com/3bot/3bot/releases/">Version: {{ version }}</a>
               </li>
             </ul>
           </li>
