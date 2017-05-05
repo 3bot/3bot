@@ -10,7 +10,7 @@ from django.conf import settings
 
 from organizations.models import Organization
 
-from threebot.models import Workflow, WorkflowLog
+from threebot.models import Workflow
 from threebot.utils import get_my_orgs, filter_workflow_log_history
 
 
@@ -57,11 +57,8 @@ def user_logout(request):
 
 @login_required
 def index(request, template='threebot/index.html'):
-    org_ids = get_my_orgs(request).values_list('id', flat=True)
-    team_logs = WorkflowLog.objects.filter(workflow__owner_id__in=org_ids).values(
-        'id', 'exit_code', 'workflow__title', 'date_created',
-        'performed_by__username', 'performed_on__id', 'performed_on__title',
-    )
+    orgs = get_my_orgs(request)
+    team_logs = filter_workflow_log_history(teams=orgs, quantity=10)
     return render_to_response(template, {'request': request,
                                          'team_logs': team_logs,
                                         }, context_instance=RequestContext(request))

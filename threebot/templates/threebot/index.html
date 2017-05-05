@@ -16,11 +16,11 @@ Configure, Build and Perform
         <table class="table table-hover">
           {% for log in team_logs %}
           <tr>
-            <td><span class="glyphicon workflow-{{ log.exit_code }}"></span></td>
+            <td><span class="glyphicon workflow-{{ log.get_exit_code_display }}"></span></td>
             <td title="{{ log.date_created|date:"d.m.y H:i" }}">{{ log.date_created|naturaltime }}</td>
-            <td><a href="{% url 'core_workflow_log_permalink' id= log.id %}">{{ log.workflow__title|truncatechars:50 }}</a></td>
-            <td><span class="label label-default">{{ log.performed_by__username }}</span></td>
-            <td><a href="{% url 'core_worker_detail' id= log.performed_on__id %}" class="label label-default">{{ log.performed_on__title|truncatechars:12 }}</a></td>
+            <td><a href="{{ log.get_absolute_url }}">{{ log.workflow|truncatechars:50 }}</a></td>
+            <td><span class="label label-default">{{ log.performed_by }}</span></td>
+            <td><a href="{{ log.performed_on.get_absolute_url }}" class="label label-default">{{ log.performed_on|truncatechars:12 }}</a></td>
           </tr>
           {% endfor %}
         </table>
