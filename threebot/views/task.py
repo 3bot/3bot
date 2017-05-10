@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 
 from organizations.models import Organization
 from threebot.models import Task, WorkflowTask, Workflow
@@ -18,9 +18,7 @@ def list(request, template='threebot/task/list.html'):
     orgs = get_my_orgs(request)
     tasks = Task.objects.filter(owner__in=orgs)
 
-    return render_to_response(template, {'request': request,
-                                         'tasks': tasks,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'tasks': tasks})
 
 
 @login_required
@@ -53,11 +51,7 @@ def detail_edit(request, slug, template='threebot/task/detail_edit.html'):
             # redirect to listview
             return redirect('core_task_list')
 
-    return render_to_response(template, {'request': request,
-                                         'task': task,
-                                         'form': form,
-                                         'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'task': task, 'form': form, 'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)})
 
 
 @login_required
@@ -71,10 +65,7 @@ def detail_digest(request, slug, template='threebot/task/detail_digest.html'):
     if task.is_builtin and not has_admin_permission(request.user, task.owner):
         raise Http404
 
-    return render_to_response(template, {'request': request,
-                                         'task': task,
-                                         'workflows': workflows,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'task': task, 'workflows': workflows})
 
 
 @login_required
@@ -96,9 +87,7 @@ def create(request, template='threebot/task/create.html', initial={}):
             # redirect to listview
             return redirect('core_task_list')
 
-    return render_to_response(template, {'request': request,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -119,9 +108,7 @@ def import_task(request, template='threebot/task/import.html'):
 
         return create(request, initial=initial)
 
-    return render_to_response(template, {'request': request,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -183,6 +170,4 @@ def delete(request, slug, template='threebot/task/delete.html'):
         else:
             return redirect('core_task_detail', slug=task.slug)
 
-    return render_to_response(template, {'task': task,
-                                         'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'task': task, 'affected_workflow_tasks': WorkflowTask.objects.filter(task=task)})

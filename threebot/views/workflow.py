@@ -1,9 +1,9 @@
+# -*- coding: utf-8 -*-
 import json
 from urllib import unquote_plus
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 from django.http import HttpResponse
 
 from threebot.models import Task
@@ -15,22 +15,8 @@ from threebot.models import UserParameter, Parameter
 from threebot.models import OrganizationParameter, ParameterList
 from threebot.models import WorkflowLog
 from threebot.tasks import run_workflow
-from threebot.utils import (
-    order_workflow_tasks,
-    render_templates,
-    render_template,
-    get_my_orgs,
-    filter_workflow_log_history
-)
-from threebot.forms import (
-    TaskParameterForm,
-    WorkflowReorderForm,
-    WorkflowCreateForm,
-    WorkflowChangeForm,
-    WorkerSelectForm,
-    UserParameterCreateForm,
-    ParameterListSelectForm
-)
+from threebot.utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
+from threebot.forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
 
 
 @login_required
@@ -38,9 +24,7 @@ def list(request, template='threebot/workflow/list.html'):
     orgs = get_my_orgs(request)
     workflows = Workflow.objects.filter(owner__in=orgs)
 
-    return render_to_response(template, {'request': request,
-                                         'workflows': workflows,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflows': workflows})
 
 
 @login_required
@@ -60,9 +44,7 @@ def create(request, template='threebot/workflow/create.html'):
             # redirect to reorder view
             return redirect('core_workflow_detail_reorder', slug=workflow.slug)
 
-    return render_to_response(template, {'request': request,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -77,10 +59,7 @@ def detail_digest(request, slug, template='threebot/workflow/detail_digest.html'
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
     logs = filter_workflow_log_history(workflow=workflow, quantity=20)
 
-    return render_to_response(template, {'request': request,
-                                         'workflow': workflow,
-                                         'logs': logs,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow, 'logs': logs})
 
 
 @login_required
@@ -103,10 +82,7 @@ def detail_edit(request, slug, template='threebot/workflow/detail_edit.html'):
             # redirect to listview
             return redirect('core_workflow_list')
 
-    return render_to_response(template, {'request': request,
-                                         'form': form,
-                                         'workflow': workflow,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'form': form, 'workflow': workflow})
 
 
 @login_required
@@ -218,13 +194,7 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
     # else:
     #     raise("error")
 
-    return render_to_response(template, {'request': request,
-                                         'workflow': workflow,
-                                         'workflow_tasks': workflow_tasks,
-                                         'worker_form': worker_form,
-                                         'logs': logs,
-                                         'parameter_form': UserParameterCreateForm(user=request.user),
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow, 'workflow_tasks': workflow_tasks, 'worker_form': worker_form, 'logs': logs, 'parameter_form': UserParameterCreateForm(user=request.user)})
 
 
 @login_required
@@ -276,13 +246,7 @@ def detail_perf_with_list(request, slug, template='threebot/workflow/detail_perf
 
     logs = filter_workflow_log_history(workflow=workflow, quantity=5)
 
-    return render_to_response(template, {'request': request,
-                                         'workflow': workflow,
-                                         'workflow_tasks': workflow_tasks,
-                                         'worker_form': worker_form,
-                                         'list_form': list_form,
-                                         'logs': logs,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow, 'workflow_tasks': workflow_tasks, 'worker_form': worker_form, 'list_form': list_form, 'logs': logs})
 
 
 @login_required
@@ -300,8 +264,7 @@ def delete(request, slug, template='threebot/workflow/delete.html'):
         else:
             return redirect('core_workflow_detail_edit', slug=workflow.slug)
 
-    return render_to_response(template, {'workflow': workflow,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow})
 
 
 @login_required
@@ -335,12 +298,7 @@ def detail_reorder(request, slug, template='threebot/workflow/detail_reorder.htm
         # redirect back to detail view
         return redirect('core_workflow_detail', workflow.slug)
 
-    return render_to_response(template, {'request': request,
-                                         'workflow': workflow,
-                                         'workflow_tasks': workflow_tasks,
-                                         'tasks': tasks,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow, 'workflow_tasks': workflow_tasks, 'tasks': tasks, 'form': form})
 
 
 @login_required
@@ -358,12 +316,7 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
     except AttributeError:
         outputs = None
 
-    return render_to_response(template, {'request': request,
-                                         'workflow': workflow,
-                                         'workflow_log': workflow_log,
-                                         'outputs': outputs,
-                                         'templates': templates,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workflow': workflow, 'workflow_log': workflow_log, 'outputs': outputs, 'templates': templates})
 
 
 @login_required

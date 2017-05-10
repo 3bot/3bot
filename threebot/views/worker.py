@@ -1,8 +1,8 @@
-from django.shortcuts import render_to_response
+# -*- coding: utf-8 -*-
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 
 from threebot.models import Worker
 from threebot.forms import WorkerChangeForm, WorkerCreateForm
@@ -14,9 +14,7 @@ def list(request, template='threebot/worker/list.html'):
     orgs = get_my_orgs(request)
     workers = Worker.objects.all().filter(owner__in=orgs)
 
-    return render_to_response(template, {'request': request,
-                                         'workers': workers,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'workers': workers})
 
 
 @login_required
@@ -48,11 +46,7 @@ def detail_edit(request, slug, template='threebot/worker/detail_edit.html'):
 
     logs = filter_workflow_log_history(worker=worker, quantity=5)
 
-    return render_to_response(template, {'request': request,
-                                         'worker': worker,
-                                         'logs': logs,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'worker': worker, 'logs': logs, 'form': form})
 
 
 @login_required
@@ -60,9 +54,7 @@ def detail_manual(request, slug, template='threebot/worker/detail_manual.html'):
     orgs = get_my_orgs(request)
     worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
 
-    return render_to_response(template, {'request': request,
-                                         'worker': worker,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'worker': worker})
 
 
 @login_required
@@ -71,10 +63,7 @@ def detail_digest(request, slug, template='threebot/worker/detail_digest.html'):
     worker = get_object_or_404(Worker, owner__in=orgs, slug=slug)
     logs = filter_workflow_log_history(worker=worker, quantity=20)
 
-    return render_to_response(template, {'request': request,
-                                         'worker': worker,
-                                         'logs': logs,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'worker': worker, 'logs': logs})
 
 
 @login_required
@@ -86,9 +75,7 @@ def create(request, template='threebot/worker/create.html'):
 
         return redirect('core_worker_detail_manual', slug=worker.slug)
 
-    return render_to_response(template, {'request': request,
-                                         'form': form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -108,5 +95,4 @@ def delete(request, slug, template='threebot/worker/delete.html'):
         else:
             return redirect('core_worker_detail', slug=worker.slug)
 
-    return render_to_response(template, {'worker': worker,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'worker': worker})

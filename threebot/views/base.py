@@ -1,16 +1,14 @@
-from django.shortcuts import render_to_response, redirect
+# -*- coding: utf-8 -*-
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
-from django.template import RequestContext
 from django.conf import settings
 
 from organizations.models import Organization
 
-from threebot.models import Workflow
 from threebot.utils import get_my_orgs, filter_workflow_log_history
 
 
@@ -26,9 +24,7 @@ def orgswitcher(request, slug):
 def chooseorg(request, template='threebot/chooseorg.html'):
     orgs = Organization.objects.filter(users=request.user)
 
-    return render_to_response(template, {'request': request,
-                                         'orgs': orgs,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'orgs': orgs})
 
 
 def user_login(request, template='threebot/login.html'):
@@ -45,9 +41,7 @@ def user_login(request, template='threebot/login.html'):
         login(request, auth_form.get_user())
         return HttpResponseRedirect(next)
 
-    return render_to_response(template, {'request': request,
-                                         'auth_form': auth_form,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'auth_form': auth_form})
 
 
 def user_logout(request):
@@ -59,6 +53,4 @@ def user_logout(request):
 def index(request, template='threebot/index.html'):
     orgs = get_my_orgs(request)
     team_logs = filter_workflow_log_history(teams=orgs, quantity=10)
-    return render_to_response(template, {'request': request,
-                                         'team_logs': team_logs,
-                                        }, context_instance=RequestContext(request))
+    return render(request, template, {'team_logs': team_logs})
