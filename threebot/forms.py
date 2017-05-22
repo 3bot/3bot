@@ -195,7 +195,7 @@ class WorkerSelectForm(forms.Form):
         workers = Worker.objects.filter(id__in=worker_ids)
         for worker in workers:
             if not worker.is_accessible:
-                raise forms.ValidationError("worker not aceccible")
+                raise forms.ValidationError("worker not accessible")
         # Always return the full collection of cleaned data.
         # This has changed in django 1.7 but raises errors in django <1.7
         # We want to support both, so we return cleanded_data
