@@ -1,5 +1,7 @@
 # 3bot
 
+[![Build Status](https://travis-ci.org/3bot/3bot.svg?branch=master)](https://travis-ci.org/3bot/3bot)
+
 3bot is an open-source software platform backed by arteria GmbH to build, configure and perform.
 To "perform" is the general term for remote executing tasks by running workflows.
 These could be configuration management (CM), continuous integration (CI), continuous delivery (CD) or application deployment
