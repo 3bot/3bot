@@ -55,7 +55,7 @@ class Worker(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
-    ip = models.IPAddressField("IP-Address",)
+    ip = models.GenericIPAddressField("IP-Address",)
     addr = models.CharField(max_length=200, null=True, blank=True, help_text='For now we use the IP to connect to the worker')
     port = models.PositiveIntegerField(default=55555)
     secret_key = models.CharField(max_length=200, null=True, blank=True, help_text='The Secret Key. Never share yours.')
