@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
-from urllib import unquote_plus
+try:
+    from urllib.parse import unquote_plus
+except ImportError:
+    from urllib import unquote_plus
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -308,7 +311,7 @@ def log_detail(request, slug, id, template='threebot/workflow/log.html'):
     workflow = get_object_or_404(Workflow, owner__in=orgs, slug=slug)
     try:
         templates = render_templates(workflow_log, mask=True)
-    except Exception, e:
+    except Exception as e:
         templates = None
 
     try:

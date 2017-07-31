@@ -268,7 +268,7 @@ def importCode(code, name, add_to_sys_modules=0):
 
     module = imp.new_module(name)
 
-    exec code in module.__dict__
+    exec(code)
     if add_to_sys_modules:
         sys.modules[name] = module
 
