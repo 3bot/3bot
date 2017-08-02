@@ -1,6 +1,8 @@
 # 3bot
 
 [![Build Status](https://travis-ci.org/3bot/3bot.svg?branch=master)](https://travis-ci.org/3bot/3bot)
+[![Coverage Status](https://coveralls.io/repos/3bot/3bot/badge.svg?branch=master&service=github)](https://coveralls.io/github/3bot/3bot?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/threebot.svg)](https://pypi.python.org/pypi/threebot)
 
 3bot is an open-source software platform backed by arteria GmbH to build, configure and perform.
 To "perform" is the general term for remote executing tasks by running workflows.
