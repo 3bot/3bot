@@ -191,8 +191,13 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
             workflow_log.save()
 
             run_workflow(workflow_log.id)
-
-        return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)  # redirects to latest
+        
+        if workers.count() > 1:
+            # redirect back to perf view
+            return redirect('core_workflow_detail', slug=workflow.slug)
+        else:
+            # redirect to log view
+            return redirect('core_workflow_log_detail', slug=workflow.slug, id=workflow_log.id)
 
     # else:
     #     raise("error")
