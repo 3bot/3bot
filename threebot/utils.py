@@ -2,6 +2,7 @@
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.template import Template, Context
 
 from organizations.models import Organization, OrganizationUser, OrganizationOwner
@@ -270,3 +271,10 @@ def importCode(code, name, add_to_sys_modules=0):
         sys.modules[name] = module
 
     return module
+
+
+def send_failiure_notification(workflow_log):
+    """Notify user in case of failure."""
+    subject = "[3BOT] Workflow '%s' has failed" % (workflow_log.workflow.title)
+    message = "Your workflow %s%s has failed.\n -- 3bot" % (Site.objects.get_current(), workflow_log.get_absolute_url())
+    workflow_log.performed_by.email_user(subject, message)

@@ -1,15 +1,18 @@
-import zmq
+# -*- coding: utf-8 -*-
+import logging
 from copy import deepcopy
-from django.contrib.sites.models import Site
+import zmq
+
 from django.template.defaultfilters import slugify
 from django.utils import timezone
-from threebot.utils import render_template, order_workflow_tasks, importCode
-from threebot.botconnection import BotConnection
-from threebot.models import WorkflowLog
+
 import threebot_crypto
 from background_task import background
 
-import logging
+from threebot.utils import render_template, order_workflow_tasks, importCode
+from threebot.botconnection import BotConnection
+from threebot.models import WorkflowLog
+from threebot.utils import send_failiure_notification
 
 logger = logging.getLogger('3bot')
 
@@ -98,9 +101,7 @@ def run_workflow(workflow_log_id):
 
     # Notify user in case of failure
     if workflow_log.exit_code == workflow_log.ERROR:
-        subject = "[3BOT] Workflow '%s' has failed" % (workflow_log.workflow.title)
-        message = "Your workflow %s%s has failed.\n -- 3bot" % (Site.objects.get_current(), workflow_log.get_absolute_url())
-        workflow_log.performed_by.email_user(subject, message)
+        send_failiure_notification(workflow_log)
 
 
 def send_script(request, conn, REQUEST_TIMEOUT=-1, REQUEST_RETRIES=1):

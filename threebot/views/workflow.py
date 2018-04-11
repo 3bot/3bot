@@ -19,6 +19,7 @@ from threebot.models import OrganizationParameter, ParameterList
 from threebot.models import WorkflowLog
 from threebot.tasks import run_workflow
 from threebot.utils import order_workflow_tasks, render_templates, get_my_orgs, filter_workflow_log_history
+from threebot.utils import send_failiure_notification
 from threebot.forms import TaskParameterForm, WorkflowReorderForm, WorkflowCreateForm, WorkflowChangeForm, WorkerSelectForm, UserParameterCreateForm, ParameterListSelectForm
 
 
@@ -191,7 +192,7 @@ def detail_perf(request, slug, template='threebot/workflow/detail_perf.html'):
             workflow_log.save()
 
             run_workflow(workflow_log.id)
-        
+
         if workers.count() > 1:
             # redirect back to perf view
             return redirect('core_workflow_detail', slug=workflow.slug)
@@ -359,7 +360,13 @@ def replay(request, slug, id):
     new_log = WorkflowLog(workflow=workflow, inputs=old_log.inputs, outputs={}, performed_by=request.user, performed_on=old_log.performed_on)
     new_log.save()
 
-    run_workflow(new_log.id)
+    if new_log.performed_on.is_accessible:
+        run_workflow(new_log.id)
+    else:
+        new_log.exit_code = new_log.ERROR
+        new_log.save()
+        send_failiure_notification(new_log)
+
     return redirect('core_workflow_log_detail', slug=slug, id=new_log.id)
 
 
