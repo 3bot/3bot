@@ -293,7 +293,7 @@ class Workflow(models.Model):
             md_hash.update(self.title.encode('utf-8') + str(datetime.datetime.now()))
             self.unique_identifier = md_hash.hexdigest()
 
-        s = str(self.owner.id) + "-" + str(self.id) + "-" + slugify(self.title)
+        s = str(self.owner_id) + "-" + str(self.id) + "-" + slugify(self.title)
         self.slug = s[:50]
         super(Workflow, self).save(*args, **kwargs)
 

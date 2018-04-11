@@ -1,6 +1,7 @@
-from django import template
+# -*- coding: utf-8 -*-
 from urllib import quote_plus
 
+from django import template
 from threebot import __version__
 from threebot.utils import get_my_orgs, get_preset_worker, has_admin_permission, render_template
 from threebot.models import WorkflowPreset, WorkflowTask

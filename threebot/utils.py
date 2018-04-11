@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.template import Template, Context
 
@@ -6,8 +9,6 @@ from organizations.models import Organization, OrganizationUser, OrganizationOwn
 from threebot.models import UserParameter
 from threebot.models import OrganizationParameter
 from threebot.models import WorkflowPreset, WorkflowTask, Worker, Workflow, Task, WorkflowLog, ParameterList
-
-import logging
 
 logger = logging.getLogger('3bot')
 
@@ -29,10 +30,7 @@ def filter_workflow_log_history(workflow=None, teams=None, exit_code=None, user=
 
 
 def has_admin_permission(user, organization):
-    if OrganizationUser.objects.filter(organization=organization, user=user, is_admin=True).exists():
-        return True
-    else:
-        return False
+    return OrganizationUser.objects.filter(organization=organization, user=user, is_admin=True).exists()
 
 
 @login_required
@@ -124,7 +122,7 @@ def get_preset_worker(request, workflow, flat=False):
 
     try:
         worker_ids = wf_preset.defaults["worker_id"]
-    except (KeyError):
+    except KeyError as e:
         worker_ids = []
 
     # backwards compatibility
@@ -233,7 +231,6 @@ def render_template(workflow_log, workflow_task, mask=False):
     inputs['payload'] = workflow_log.inputs.get('payload', {})
     inputs['log'] = {}
     inputs['log']['url'] = workflow_log.get_absolute_url()
-    # TODO: provide more information and document this type of inputs in knowledge base
 
     # Script/tempate rendering
     wf_context = Context(inputs)
